@@ -7,8 +7,12 @@ import sys
 import logging
 import argparse
 
-log = logging.getLogger(__name__)
+from PyQt4 import QtGui
 
+from linegrab import visualize
+
+logging.basicConfig(filename="LineGrab_log.txt", level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 class LineGrabApplication(object):
     """ Create the window with the graphs, setup communication based on
@@ -38,18 +42,26 @@ class LineGrabApplication(object):
             help="Use Wasatch Photonics Cobra camera")
     
         return parser
-    
+
+    def run(self):
+        log.debug("Create application")
+        self.app = QtGui.QApplication([])
+        self.form = visualize.DualGraphs()
+        self.form.show()
+        sys.exit(self.app.exec_())
 
 def main(argv=None):
     if argv is None: 
         from sys import argv as sys_argv 
         argv = sys_argv 
 
+    exit_code = 0
     try:
         
-        wsdapp = WasatchDeviceApplication()
-        wsdapp.parse_args(argv)
-        wsdapp.run()
+        lngapp = LineGrabApplication()
+        lngapp.parse_args(argv)
+        lngapp.run()
+
     except SystemExit, exc:
         exit_code = exc.code
     
