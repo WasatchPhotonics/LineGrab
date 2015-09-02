@@ -2,15 +2,42 @@
 communication with camera control devices.
 """
 
+import numpy
 import logging
+
 log = logging.getLogger(__name__)
 
 class SimulatedPipeDevice(object):
+    """ Use the pipe device interface, return a cycling test pattern of
+    data.
+    """
+
 
     def __init__(self):
         log.debug("Startup")
+        self.pattern_position = 0
+        self.data_length = 1024
+        self.top_level = 1000
 
     def setup_pipe(self):
-        log.info("Create pipe device")
+        log.info("Setup pipe device")
         return True
 
+    def grab_pipe(self):
+        """ Create a cycling test pattern based on the current position
+        """
+        log.debug("Grab pipe")
+        start = self.pattern_position 
+        end = self.pattern_position + self.top_level
+        data = numpy.linspace(start, end, 1024)
+
+        self.pattern_position += 1
+        if self.pattern_position >= self.top_level:
+            self.pattern_position = 0
+
+        return True, data
+
+    def close_pipe(self):
+        log.info("Close pipe device")
+        self.pattern_position = 0
+        return True

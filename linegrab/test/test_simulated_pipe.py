@@ -28,12 +28,40 @@ class Test(unittest.TestCase):
 
         gr = self.log_name
         self.log_capture.check(
-            (gr, "INFO", "Create pipe device"),
+            (gr, "INFO", "Setup pipe device"),
             )
 
-
-    def test_pipe_setup(self):
+    def test_pipe_cycle(self):
         self.assertTrue(self.dev.setup_pipe())
+
+        result, data = self.dev.grab_pipe()
+        self.assertTrue(result)
+        self.assertEqual(len(data), 1024)
+
+        self.assertTrue(self.dev.close_pipe())
+
+    def test_pipe_test_pattern(self):
+        self.assertTrue(self.dev.setup_pipe())
+
+        result, data = self.dev.grab_pipe()
+        self.assertTrue(result)
+        self.assertEqual(len(data), 1024)
+        self.assertEqual(data[0], 0)
+        self.assertEqual(data[1023], 1000)
+
+        # Roll through half the test pattern
+        for i in range(500):
+            result, data = self.dev.grab_pipe()
+
+        self.assertEqual(data[0], 500)
+        self.assertEqual(data[1023], 1500)
+   
+        # roll through the rest of the test pattern, make sure it wraps 
+        for i in range(500):
+            result, data = self.dev.grab_pipe()
+    
+        self.assertEqual(data[0], 0)
+        self.assertEqual(data[1023], 1000)
 
 if __name__ == "__main__":
     unittest.main()
