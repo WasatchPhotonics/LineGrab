@@ -12,7 +12,6 @@ class SimulatedPipeDevice(object):
     data.
     """
 
-
     def __init__(self):
         log.debug("Startup")
         self.pattern_position = 0
