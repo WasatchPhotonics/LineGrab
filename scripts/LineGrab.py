@@ -4,6 +4,7 @@ graphs of data from cameras.
 """
 
 import sys
+import numpy
 import logging
 import argparse
 
@@ -24,7 +25,10 @@ class LineGrabApplication(object):
         super(LineGrabApplication, self).__init__()
         log.debug("LineGrabApplication startup")
         self.parser = self.create_parser()
-        self.total_render = 0
+        self.curve_render = 0
+        self.image_render = 0
+        self.image_height = 200
+        self.image_data = []
 
     def setup_pipe_timer(self):
         """ This is a non-threaded application that uses qtimers with
@@ -32,10 +36,10 @@ class LineGrabApplication(object):
         while staying responsive to user events.
         """
         self.dataTimer = QtCore.QTimer()
-        self.dataTimer.timeout.connect(self.update_graph)
-        self.dataTimer.start(1000)
+        self.dataTimer.timeout.connect(self.update_visuals)
+        self.dataTimer.start(500)
 
-    def update_graph(self):
+    def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
         """
 
@@ -45,14 +49,42 @@ class LineGrabApplication(object):
             log.warn("Problem reading from pipe")
         
         self.form.reuse_graph(data)
-        self.total_render += 1
+        self.curve_render += 1
 
         if self.args.testing:
-            log.debug("render %s Start:%s End:%s" \
-                      % (self.total_render, data[0], data[-1]))
+            log.debug("render curve %s Start:%s End:%s" \
+                      % (self.curve_render, data[0], data[-1]))
+
+        self.update_image(data)
 
         self.dataTimer.start(0)
-       
+      
+    def update_image(self, data):
+        """ Add the line of data to the image data, if it is greater
+        than the desired display size, roll it.
+        """
+        self.image_data.append(data)
+        if len(self.image_data) > self.image_height:
+            self.image_data = self.image_data[1:]
+
+        img_data = range(len(self.image_data))
+
+        position = 0
+        for item in img_data:
+            img_data[position] = self.image_data[position]
+            position += 1
+
+        new_data = numpy.array(img_data).astype(float)
+        self.form.reuse_image(new_data)
+
+        self.image_render += 1
+        if self.args.testing:
+            log.debug("render image %s Start:%s End:%s" \
+                      % (self.image_render, new_data[0][0],
+                         new_data[-1][-1]
+                        )
+                     )
+ 
     def closeEvent(self):
         """ close the pipes, stop all the timers.
         """
@@ -110,7 +142,7 @@ class LineGrabApplication(object):
         log.debug("Trigger delay close")
         self.closeTimer = QtCore.QTimer()
         self.closeTimer.timeout.connect(self.form.close)
-        self.closeTimer.start(2000)
+        self.closeTimer.start(3000)
 
 def main(argv=None):
     if argv is None: 

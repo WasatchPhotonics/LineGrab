@@ -47,3 +47,20 @@ class DualGraphs(QtGui.QWidget):
             self.MainGraph.render_graph(data_list) 
             
         self.MainGraph.plot.do_autoscale()
+
+    def reuse_image(self, data_list):
+        """ Get the current image item (if it exists) from the
+        simpleheatmap, change it's data and replot.
+        """
+        log.debug("reuse image")
+       
+        try:
+            image = self.MainImage.image
+            image.set_data(data_list)
+
+        except AttributeError:
+            log.info("Assuming image does not exist, creating")
+            self.MainImage.render_image(data_list)
+        
+        #self.MainImage.plot.do_autoscale()
+        self.MainImage.plot.replot()

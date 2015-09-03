@@ -43,7 +43,7 @@ class Test(unittest.TestCase):
 
         data = numpy.array(img_data).astype(float)
 
-        self.form.MainImage.render_image(data)
+        self.form.reuse_image(data)
         
 
 
