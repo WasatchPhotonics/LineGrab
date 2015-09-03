@@ -27,7 +27,7 @@ class LineGrabApplication(object):
         self.parser = self.create_parser()
         self.curve_render = 0
         self.image_render = 0
-        self.image_height = 200
+        self.image_height = 100
         self.image_data = []
 
     def setup_pipe_timer(self):
