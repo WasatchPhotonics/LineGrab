@@ -29,18 +29,21 @@ class DualGraphs(QtGui.QWidget):
         vbox.addWidget(self.MainGraph)
         vbox.addWidget(self.MainImage)
         self.setLayout(vbox)
-        #self.setCentralWidget(self.MainGraph)
 
         self.setGeometry(100, 100, 800, 600) 
 
-    def render_graph(self, data_list):
-        """ With a one dimensional list, create new curve, add it to the
-        graph, replot the graph.
+    def reuse_graph(self, data_list):
+        """ Get the current line plot from the simplelinegraph, change
+        it's data and replot.
         """
-        log.debug("Render graph")
+        log.debug("Reuse graph")
         x_axis = range(len(data_list))
-        self.curve = curve.CurveItem(self.chart_param)
-        self.curve.set_data(x_axis, data_list)
-        self.plot.add_item(self.curve)
-        self.plot.do_autoscale()
-        return True
+        try:
+            curve = self.MainGraph.curve
+            curve.set_data(x_axis, data_list)
+
+        except AttributeError:
+            log.info("Assuming graph does not exist, creating")
+            self.MainGraph.render_graph(data_list) 
+            
+        self.MainGraph.plot.do_autoscale()

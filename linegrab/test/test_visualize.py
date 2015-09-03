@@ -29,10 +29,10 @@ class Test(unittest.TestCase):
         image_x = self.form.MainImage.x()
         image_y = self.form.MainImage.y()
         self.assertEqual(image_x, 11)
-        self.assertEqual(image_y, 303)
+        self.assertEqual(image_y, 275)
 
         curve_data = numpy.linspace(0, 1000, 1024)
-        self.form.MainGraph.render_gaps(curve_data)
+        self.form.reuse_graph(curve_data)
 
         img_data = range(200)
 
