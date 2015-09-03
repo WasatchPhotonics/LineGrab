@@ -1,14 +1,13 @@
 """ helper widgets for visualizing line spectra data.
 """
 
+import logging
+
 from PyQt4 import QtGui
 
-from guiqwt import plot
-from guiqwt import styles
-from guiqwt import curve
-from guiqwt import builder
-
 from boardtester import visualize as broastervis
+
+log = logging.getLogger(__name__)
 
 class DualGraphs(QtGui.QWidget):
     """ A Qt mainwindow that has a curve plot and image plot wrapper as
@@ -17,24 +16,15 @@ class DualGraphs(QtGui.QWidget):
 
     def __init__(self):
         super(DualGraphs, self).__init__()
+        log.debug("setup ui")
         self.setupUI()
         self.show()
 
     def setupUI(self):
     
         self.MainGraph = broastervis.SimpleLineGraph()
-
         self.MainImage = broastervis.SimpleHeatMap()
 
-        #self.MainGraph = plot.CurveDialog(toolbar=True,
-            #edit=True, wintitle="Main Dialog")
-#
-        #self.plot = self.MainGraph.get_plot()
-        #
-        #self.chart_param = styles.CurveParam()
-        #self.chart_param.label = "Data"
-        #self.chart_param.line.color = "Blue"
-    
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(self.MainGraph)
         vbox.addWidget(self.MainImage)
@@ -47,6 +37,7 @@ class DualGraphs(QtGui.QWidget):
         """ With a one dimensional list, create new curve, add it to the
         graph, replot the graph.
         """
+        log.debug("Render graph")
         x_axis = range(len(data_list))
         self.curve = curve.CurveItem(self.chart_param)
         self.curve.set_data(x_axis, data_list)

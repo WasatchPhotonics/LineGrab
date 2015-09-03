@@ -7,12 +7,12 @@ import sys
 import logging
 import argparse
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 from linegrab import visualize
 
 logging.basicConfig(filename="LineGrab_log.txt", level=logging.DEBUG)
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 class LineGrabApplication(object):
     """ Create the window with the graphs, setup communication based on
@@ -24,10 +24,9 @@ class LineGrabApplication(object):
         self.parser = self.create_parser()
 
     def parse_args(self, argv):
-        """ Handle any bad arguments, the set defaults
+        """ Handle any bad arguments, then set defaults
         """
-        log.warn("clear args")
-        self.args = self.parser.parse_args([])
+        self.args = self.parser.parse_args(argv)
         return self.args
 
 
@@ -35,6 +34,9 @@ class LineGrabApplication(object):
         desc = "acquire from specified device, display line graph"
         parser = argparse.ArgumentParser(description=desc)
     
+        parser.add_argument("-t", "--testing", action="store_true",
+            help="Automatically terminate the program for testing")
+
         parser.add_argument("-e", "--e2v", action="store_true",
             help="Use E2V camera")
 
@@ -47,8 +49,21 @@ class LineGrabApplication(object):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
         self.form = visualize.DualGraphs()
+
+        if self.args.testing:
+            self.delay_close()
+
         self.form.show()
         sys.exit(self.app.exec_())
+
+    def delay_close(self):
+        """ For testing purposes, create a qtimer that triggers the
+        form's close event after a delay.
+        """
+        log.debug("Trigger delay close")
+        self.closeTimer = QtCore.QTimer()
+        self.closeTimer.timeout.connect(self.form.close)
+        self.closeTimer.start(1000)
 
 def main(argv=None):
     if argv is None: 
