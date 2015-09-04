@@ -6,7 +6,7 @@ import unittest
 from testfixtures import LogCapture
 
 from linegrab.devices import SimulatedPipeDevice
-# don't forget to intercept the logging to test that as well
+
 class Test(unittest.TestCase):
     
     def setUp(self):
