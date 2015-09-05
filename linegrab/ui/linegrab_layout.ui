@@ -1242,7 +1242,7 @@ QSplitter::handle:vertical {
      <number>0</number>
     </property>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="frameCurve">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -1260,20 +1260,11 @@ QSplitter::handle:vertical {
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayoutCurve">
          <item>
-          <widget class="QwtPlot" name="qwtPlot">
-           <property name="canvasBackground">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>48</red>
-              <green>47</green>
-              <blue>47</blue>
-             </color>
-            </brush>
-           </property>
-           <property name="autoReplot">
-            <bool>true</bool>
+          <widget class="QLabel" name="labelCurvePlaceholder">
+           <property name="text">
+            <string>Main curve plot area</string>
            </property>
           </widget>
          </item>
@@ -1283,7 +1274,7 @@ QSplitter::handle:vertical {
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="frame_2">
+     <widget class="QFrame" name="frameImage">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -1305,19 +1296,32 @@ QSplitter::handle:vertical {
       <property name="lineWidth">
        <number>0</number>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string/>
+        <layout class="QVBoxLayout" name="verticalLayoutImage">
+         <property name="spacing">
+          <number>0</number>
          </property>
-         <property name="pixmap">
-          <pixmap>example_heatmap_with_axis.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
+         <item>
+          <widget class="QLabel" name="labelImagePlaceholder">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="iconagraphy.qrc">:/images/example_heatmap_with_axis.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -1330,7 +1334,7 @@ QSplitter::handle:vertical {
      <x>0</x>
      <y>0</y>
      <width>1079</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -1451,13 +1455,6 @@ QSplitter::handle:vertical {
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="iconagraphy.qrc"/>
  </resources>
