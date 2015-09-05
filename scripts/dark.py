@@ -30,10 +30,19 @@ class DarkTestApplication(QtGui.QMainWindow):
     def __init__(self):
         super(DarkTestApplication, self).__init__()
 
+        self.load_style_sheet()
+
         from linegrab.ui.linegrab_layout import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.insert_curves()
+        self.setGeometry(450, 350, 1080, 600)
+
+        #self.green_on_black = "background-color: rgba(0,0,0,255);\n" + \
+                              #"color: rgba(0,255,0,255);"
+        #self.mainCurveDialog.setStyleSheet(self.green_on_black)
+        self.setStyleSheet(self.qss_string)
+
         self.show()
 
 
@@ -43,6 +52,16 @@ class DarkTestApplication(QtGui.QMainWindow):
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.dark_update)
         self.dataTimer.start(300)
+       
+    def load_style_sheet(self, filename="linegrab/ui/linegrab.css"):
+        """ Load the qss stylesheet into a string suitable for passing
+        to the main widget.
+        """
+        qss_file = open(filename)
+        self.qss_string = ""
+        for line in qss_file.readlines():
+            self.qss_string += line
+        #print "style sheet: %s" % self.qss_string
 
     def setup_chart(self):
         self.chart_param = styles.CurveParam()
@@ -53,20 +72,19 @@ class DarkTestApplication(QtGui.QMainWindow):
         # From: http://stackoverflow.com/questions/4625102/\
         # how-to-replace-a-widget-with-another-using-qt
       
-        self.mainCurveDialog = plot.CurveDialog(toolbar=True,
+        self.mainCurveDialog = plot.CurveDialog(toolbar=False,
             wintitle="Main Dialog")
  
         lcph = self.ui.labelCurvePlaceholder
-
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
-
         lcph.close()
 
-        lcph = self.mainCurveDialog
-        vlc.insertWidget(0, lcph)
+        vlc.insertWidget(0, self.mainCurveDialog)
         vlc.update()
+        print "What is the curve: %r" % self.mainCurveDialog
         
+
 
         self.mainImageDialog = plot.ImageDialog(toolbar=False,
             wintitle="Image dialog")
@@ -75,8 +93,7 @@ class DarkTestApplication(QtGui.QMainWindow):
         vli = self.ui.verticalLayoutImage
         vli.removeWidget(liph)
         liph.close()
-        #liph = self.mainImageDialog
-        #vli.insertWidget(0, liph)  
+        
         vli.insertWidget(0, self.mainImageDialog)
         vli.update()
 
