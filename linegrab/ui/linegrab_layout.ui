@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
+    <width>1079</width>
     <height>600</height>
    </rect>
   </property>
@@ -1329,7 +1329,7 @@ QSplitter::handle:vertical {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>941</width>
+     <width>1079</width>
      <height>25</height>
     </rect>
    </property>
@@ -1356,21 +1356,20 @@ QSplitter::handle:vertical {
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
-   <addaction name="actionPauseDisplay"/>
    <addaction name="actionAutoScale"/>
+   <addaction name="actionBiglongone_2"/>
    <addaction name="actionFull_Extent"/>
    <addaction name="actionTestaction"/>
    <addaction name="actionSecondary"/>
    <addaction name="actionBiglongone"/>
-   <addaction name="actionBiglongone_2"/>
   </widget>
   <action name="actionTestaction">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/wavelength.png</normaloff>:/imagery/wavelength.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_play_arrow_black_48px.svg</normaloff>:/material/material/ic_play_arrow_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>testaction</string>
@@ -1378,8 +1377,8 @@ QSplitter::handle:vertical {
   </action>
   <action name="actionSecondary">
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/file_save.png</normaloff>:/imagery/file_save.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_vertical_align_top_black_48px.svg</normaloff>:/material/material/ic_vertical_align_top_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>secondary</string>
@@ -1390,8 +1389,8 @@ QSplitter::handle:vertical {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/options_off.png</normaloff>:/imagery/options_off.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_center_focus_strong_black_48px.svg</normaloff>:/material/material/ic_center_focus_strong_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>biglongone</string>
@@ -1402,8 +1401,8 @@ QSplitter::handle:vertical {
   </action>
   <action name="actionBiglongone_2">
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/peak_detect.png</normaloff>:/imagery/peak_detect.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_pause_circle_outline_black_48px.svg</normaloff>:/material/material/ic_pause_circle_outline_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>biglongone</string>
@@ -1417,8 +1416,8 @@ QSplitter::handle:vertical {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/auto_acquire.png</normaloff>:/imagery/auto_acquire.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_play_arrow_black_48px.svg</normaloff>:/material/material/ic_play_arrow_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>PauseDisplay</string>
@@ -1429,8 +1428,8 @@ QSplitter::handle:vertical {
   </action>
   <action name="actionAutoScale">
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/large_settings.png</normaloff>:/imagery/large_settings.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_play_circle_outline_black_48px.svg</normaloff>:/material/material/ic_play_circle_outline_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>AutoScale</string>
@@ -1441,8 +1440,8 @@ QSplitter::handle:vertical {
   </action>
   <action name="actionFull_Extent">
    <property name="icon">
-    <iconset resource="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc">
-     <normaloff>:/imagery/chart_details.png</normaloff>:/imagery/chart_details.png</iconset>
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/material/material/ic_vertical_align_center_black_48px.svg</normaloff>:/material/material/ic_vertical_align_center_black_48px.svg</iconset>
    </property>
    <property name="text">
     <string>Full Extent</string>
@@ -1460,7 +1459,7 @@ QSplitter::handle:vertical {
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../../old.201508240929/sandbox/Dash3/imagery_list.qrc"/>
+  <include location="iconagraphy.qrc"/>
  </resources>
  <connections/>
 </ui>

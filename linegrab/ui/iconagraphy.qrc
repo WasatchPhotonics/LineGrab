@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="material">
+    <file>material/ic_center_focus_strong_black_48px.svg</file>
+    <file>material/ic_pause_circle_outline_black_48px.svg</file>
+    <file>material/ic_play_circle_outline_black_48px.svg</file>
+    <file>material/ic_vertical_align_center_black_48px.svg</file>
+    <file>material/ic_vertical_align_top_black_48px.svg</file>
+    <file>material/ic_play_arrow_black_48px.svg</file>
+  </qresource>
+</RCC>
