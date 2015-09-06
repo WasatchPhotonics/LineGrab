@@ -12,11 +12,12 @@ class SimulatedPipeDevice(object):
     data.
     """
 
-    def __init__(self):
+    def __init__(self, pattern_jump=1):
         log.debug("Startup")
         self.pattern_position = 0
         self.data_length = 1024
         self.top_level = 1000
+        self.pattern_jump = pattern_jump
 
     def setup_pipe(self):
         log.info("Setup pipe device")
@@ -30,7 +31,7 @@ class SimulatedPipeDevice(object):
         end = self.pattern_position + self.top_level
         data = numpy.linspace(start, end, 1024)
 
-        self.pattern_position += 1
+        self.pattern_position += self.pattern_jump
         if self.pattern_position >= self.top_level:
             self.pattern_position = 0
 

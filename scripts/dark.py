@@ -24,7 +24,41 @@ log = logging.getLogger()
 class CleanImageDialog(plot.ImageDialog):
     def __init__(self):
         super(CleanImageDialog, self).__init__(toolbar=False, edit=True)
+        grid_item = self.get_plot().get_items()[0]
+        self.get_plot().del_item(grid_item)
+        
+        #for item in self.get_plot().get_scales():
+            #print "scale: %r " % item
 
+        plot = self.get_plot()
+        base_data = range(50)
+
+        position = 0
+        for item in base_data:
+            base_data[position] = numpy.linspace(0, 100, 1024)
+            position += 1
+
+        new_data = numpy.array(base_data).astype(float)
+
+        bmi = builder.make.image
+        image = bmi(new_data)
+        plot.add_item(image)
+        plot.do_autoscale()
+        
+        for item in plot.get_items():
+            print "Plot items: %s" % item
+
+        print "colormap axis: %s" % plot.colormap_axis
+        plot.enableAxis(plot.colormap_axis, False)
+        #for item in plot.get_active_axes():
+            #print "axes: %s " % item
+            #print "class: %s " % plot.get_axesparam_class(item)
+            #print "direction : %s " % plot.get_axis_direction(item)
+            #print "title: %s " % plot.get_axis_title(item)
+            #print "unit: %s " % plot.get_axis_unit(item)
+      
+        # Note that this disagrees with the documentation 
+        self.get_plot().set_axis_direction("left", False)
 
 class CleanCurveDialog(plot.CurveDialog):
     def __init__(self):
@@ -53,7 +87,7 @@ class DarkTestApplication(QtGui.QMainWindow):
         super(DarkTestApplication, self).__init__()
 
         self.qss_string = self.load_style_sheet("qdarkstyle.css")
-        self.image_height = 100
+        self.image_height = 50
         self.image_data = []
 
         from linegrab.ui.linegrab_layout import Ui_MainWindow
@@ -79,7 +113,7 @@ class DarkTestApplication(QtGui.QMainWindow):
 
 
         self.setup_chart()
-        self.dev = devices.SimulatedPipeDevice()
+        self.dev = devices.SimulatedPipeDevice(pattern_jump=5)
         result = self.dev.setup_pipe()
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.dark_update)
