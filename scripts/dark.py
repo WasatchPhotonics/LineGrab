@@ -21,6 +21,28 @@ logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
 log = logging.getLogger()
 
+class CleanImageDialog(plot.ImageDialog):
+    def __init__(self):
+        super(CleanImageDialog, self).__init__(toolbar=False, edit=True)
+
+
+class CleanCurveDialog(plot.CurveDialog):
+    def __init__(self):
+        super(CleanCurveDialog, self).__init__(edit=True)
+
+        # now that the curvedialog has been created, get the list of
+        # items from the curveplot, which should only have a grid at
+        # this point. Dont' show the grid. Can't get it back if you just
+        # delete it...
+        grid_item = self.get_plot().get_items()[0]
+        self.get_plot().del_item(grid_item)
+
+    def install_button_layout(self):
+        """ Do not show the ok, cancel buttons, yet retain the right
+        click editing capabilities.
+        """
+        print "No button layout"
+
 class DarkTestApplication(QtGui.QMainWindow):
     """ Import the generated py file from the qt-designer created .ui
     file. Apply the system-wide style sheet. Integrate with actual
@@ -30,7 +52,9 @@ class DarkTestApplication(QtGui.QMainWindow):
     def __init__(self):
         super(DarkTestApplication, self).__init__()
 
-        self.load_style_sheet()
+        self.qss_string = self.load_style_sheet("qdarkstyle.css")
+        self.image_height = 100
+        self.image_data = []
 
         from linegrab.ui.linegrab_layout import Ui_MainWindow
         self.ui = Ui_MainWindow()
@@ -40,8 +64,16 @@ class DarkTestApplication(QtGui.QMainWindow):
 
         #self.green_on_black = "background-color: rgba(0,0,0,255);\n" + \
                               #"color: rgba(0,255,0,255);"
-        #self.mainCurveDialog.setStyleSheet(self.green_on_black)
+        #self.mainCurveWidget.setStyleSheet(self.green_on_black)
         self.setStyleSheet(self.qss_string)
+
+        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        self.mainCurveWidget.setStyleSheet(self.chart_style)
+        self.mainImageDialog.setStyleSheet(self.chart_style)
+
+
+        new_plot = self.mainCurveWidget.get_plot()
+        new_plot.set_axis_color(3, "Blue")
 
         self.show()
 
@@ -53,41 +85,46 @@ class DarkTestApplication(QtGui.QMainWindow):
         self.dataTimer.timeout.connect(self.dark_update)
         self.dataTimer.start(300)
        
-    def load_style_sheet(self, filename="linegrab/ui/linegrab.css"):
+    def load_style_sheet(self, filename):
         """ Load the qss stylesheet into a string suitable for passing
         to the main widget.
         """
-        qss_file = open(filename)
-        self.qss_string = ""
+        qss_file = open("linegrab/ui/%s" % filename)
+        temp_string = ""
         for line in qss_file.readlines():
-            self.qss_string += line
-        #print "style sheet: %s" % self.qss_string
+            temp_string += line
+           
+        return temp_string
 
     def setup_chart(self):
         self.chart_param = styles.CurveParam()
         self.chart_param.label = "Data"
-        self.chart_param.line.color = "Blue"
+        self.chart_param.line.color = "Green"
 
     def insert_curves(self):
         # From: http://stackoverflow.com/questions/4625102/\
         # how-to-replace-a-widget-with-another-using-qt
       
-        self.mainCurveDialog = plot.CurveDialog(toolbar=False,
-            wintitle="Main Dialog")
+
+        #self.mainCurveWidget = plot.CurveWidget(gridparam=mygrid)
+
+        #self.mainCurveWidget = plot.CurveDialog(toolbar=False, edit=True)
+        self.mainCurveWidget = CleanCurveDialog()
  
         lcph = self.ui.labelCurvePlaceholder
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
         lcph.close()
 
-        vlc.insertWidget(0, self.mainCurveDialog)
+        vlc.insertWidget(0, self.mainCurveWidget)
         vlc.update()
-        print "What is the curve: %r" % self.mainCurveDialog
+        print "What is the curve: %r" % self.mainCurveWidget
         
 
 
-        self.mainImageDialog = plot.ImageDialog(toolbar=False,
-            wintitle="Image dialog")
+        #self.mainImageDialog = plot.ImageDialog(toolbar=False,
+            #wintitle="Image dialog")
+        self.mainImageDialog = CleanImageDialog()
 
         liph = self.ui.labelImagePlaceholder
         vli = self.ui.verticalLayoutImage
@@ -108,7 +145,7 @@ class DarkTestApplication(QtGui.QMainWindow):
     def dark_update(self):
         result, data = self.dev.grab_pipe()
         self.reuse_graph(data)
-        #self.update_image(data)
+        self.dark_update_image(data)
         self.dataTimer.start(0)
 
     def reuse_graph(self, data_list):
@@ -121,7 +158,7 @@ class DarkTestApplication(QtGui.QMainWindow):
             log.info("Assuming graph does not exist, creating")
             self.render_graph(data_list) 
             
-        plot = self.mainCurveDialog.get_plot()
+        plot = self.mainCurveWidget.get_plot()
         plot.do_autoscale()
 
     def render_graph(self, data_list):
@@ -129,10 +166,39 @@ class DarkTestApplication(QtGui.QMainWindow):
         self.curve = curve.CurveItem(self.chart_param)
         self.curve.set_data(x_axis, data_list)
 
-        plot = self.mainCurveDialog.get_plot()
+        plot = self.mainCurveWidget.get_plot()
         plot.add_item(self.curve)
         plot.do_autoscale()
         return True
+      
+    def dark_update_image(self, data):
+        self.image_data.append(data)
+        if len(self.image_data) > self.image_height:
+            self.image_data = self.image_data[1:]
+
+        img_data = range(len(self.image_data))
+
+        position = 0
+        for item in img_data:
+            img_data[position] = self.image_data[position]
+            position += 1
+
+        new_data = numpy.array(img_data).astype(float)
+
+        try:
+            image = self.image
+            image.set_data(new_data)
+
+        except AttributeError:
+            log.info("Assuming image does not exist, creating")
+            bmi = builder.make.image
+            self.image = bmi(new_data)
+            self.mainImageDialog.get_plot().add_item(self.image)
+            self.mainImageDialog.get_plot().do_autoscale()
+        
+        #self.MainImage.plot.do_autoscale()
+        self.mainImageDialog.get_plot().replot()
+ 
       
 def main(argv=None):
     app = QtGui.QApplication(argv)

@@ -1,0 +1,30 @@
+/* Custom styles for just the graph elements in psuedo-css. Can't figure
+ * out the proper strings to have the widgets referenced in the primary
+ * stylesheet, so just define them as strings in this file, and feed
+ * them directly to the curvedialog setstylesheet function. This is not
+ * valid css.
+ */
+
+/* black chart background
+background-color: "#000000";
+*/
+
+/* matches qdarkstyle    
+ */
+
+/*
+background-color: "#302f2f";
+                              
+color: rgba(0,120,0,255);
+*/
+
+QWidget
+{
+    color: silver;
+    background-color: rgba(0,0,0,255);
+    selection-background-color:#3d8ec9;
+    selection-color: black;
+    background-clip: border;
+    border-image: none;
+    outline: 0;
+}
