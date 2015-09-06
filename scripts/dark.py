@@ -41,7 +41,7 @@ class CleanImageDialog(plot.ImageDialog):
         new_data = numpy.array(base_data).astype(float)
 
         bmi = builder.make.image
-        image = bmi(new_data)
+        image = bmi(new_data, colormap="bone")
         plot.add_item(image)
         plot.do_autoscale()
         
@@ -105,6 +105,8 @@ class DarkTestApplication(QtGui.QMainWindow):
         self.mainCurveWidget.setStyleSheet(self.chart_style)
         self.mainImageDialog.setStyleSheet(self.chart_style)
 
+        # Image left, top, right, bottom
+        self.mainImageDialog.setContentsMargins(10, 0, 0, 0)
 
         new_plot = self.mainCurveWidget.get_plot()
         new_plot.set_axis_color(3, "Blue")
@@ -113,7 +115,9 @@ class DarkTestApplication(QtGui.QMainWindow):
 
 
         self.setup_chart()
-        self.dev = devices.SimulatedPipeDevice(pattern_jump=5)
+        #self.dev = devices.SimulatedPipeDevice(pattern_jump=50, 1000)
+        self.dev = devices.SimulatedPipeDevice(pattern_jump=100,
+                                               top_level=4096)
         result = self.dev.setup_pipe()
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.dark_update)
@@ -226,7 +230,7 @@ class DarkTestApplication(QtGui.QMainWindow):
         except AttributeError:
             log.info("Assuming image does not exist, creating")
             bmi = builder.make.image
-            self.image = bmi(new_data)
+            self.image = bmi(new_data, colormap="bone")
             self.mainImageDialog.get_plot().add_item(self.image)
             self.mainImageDialog.get_plot().do_autoscale()
         

@@ -12,11 +12,11 @@ class SimulatedPipeDevice(object):
     data.
     """
 
-    def __init__(self, pattern_jump=1):
+    def __init__(self, pattern_jump=1, top_level=1000):
         log.debug("Startup")
         self.pattern_position = 0
         self.data_length = 1024
-        self.top_level = 1000
+        self.top_level = top_level
         self.pattern_jump = pattern_jump
 
     def setup_pipe(self):
