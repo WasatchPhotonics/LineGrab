@@ -48,14 +48,14 @@ class LineGrabApplication(object):
         if not result:
             log.warn("Problem reading from pipe")
         
-        self.form.reuse_graph(data)
-        self.curve_render += 1
+        self.form.update_graph(data)
+        #self.curve_render += 1
 
-        if self.args.testing:
-            log.debug("render curve %s Start:%s End:%s" \
-                      % (self.curve_render, data[0], data[-1]))
+        #if self.args.testing:
+            #log.debug("render curve %s Start:%s End:%s" \
+                      #% (self.curve_render, data[0], data[-1]))
 
-        self.update_image(data)
+        #self.update_image(data)
 
         self.dataTimer.start(0)
       
