@@ -12,6 +12,7 @@ from PyQt4 import QtGui, QtCore
 
 from linegrab import visualize
 from linegrab import devices
+from linegrab import utils
 
 logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
@@ -62,6 +63,9 @@ class LineGrabApplication(object):
         if self.curve_render == 1:
             self.DarkGraphs.MainImageDialog.get_plot().do_autoscale()
 
+        self.fps.tick()
+        fps_text = "Update: %s FPS" % self.fps.rate()
+        self.DarkGraphs.ui.actionFrameratetext.setText(fps_text)
         self.dataTimer.start(0)
 
     def update_graph(self, data_list):
@@ -150,6 +154,7 @@ class LineGrabApplication(object):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
         self.DarkGraphs = visualize.DarkGraphs()
+        self.fps = utils.SimpleFPS()
         self.setup_pipe_timer()
 
         if self.args.testing:
