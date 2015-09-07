@@ -61,7 +61,16 @@ class LineGrabApplication(object):
         # If it's the first render, autoscale to make sure it lines up
         # properly. See update_graph for why this is necessary
         if self.curve_render == 1:
-            self.DarkGraphs.MainImageDialog.get_plot().do_autoscale()
+            local_plot = self.DarkGraphs.MainImageDialog.get_plot()
+            local_plot.do_autoscale()
+
+            # Set the aspect ratio 
+            #ratio = 50 / 1024
+            #local_plot.set_aspect_ratio(1/0.4, lock=False)
+            local_plot.set_aspect_ratio(lock=False)
+            
+            # Change the plot axis to have 0 in the lower left corner
+            local_plot.set_axis_limits(0, -5, 50)
 
         self.fps.tick()
         fps_text = "Update: %s FPS" % self.fps.rate()

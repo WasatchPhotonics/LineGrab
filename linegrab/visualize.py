@@ -19,7 +19,11 @@ class CleanImageDialog(plot.ImageDialog):
     visualized, colormap applied, and stylesheet applied.
     """
     def __init__(self):
-        super(CleanImageDialog, self).__init__(toolbar=False, edit=True)
+        #options = {"lock_aspect_ratio": False}
+        options = {"lock_aspect_ratio": True}
+
+        super(CleanImageDialog, self).__init__(toolbar=False, edit=True,
+                                               options=options)
         grid_item = self.get_plot().get_items()[0]
         self.get_plot().del_item(grid_item)
        
@@ -52,6 +56,7 @@ class CleanImageDialog(plot.ImageDialog):
         local_plot = self.get_plot()
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
+        
         
        
     def load_style_sheet(self, filename):
