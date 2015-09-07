@@ -52,33 +52,9 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
         self.spectra_type = spectra_type
 
         if self.spectra_type == "raman":
-            #self.waveform = self.generate_raman()
-            self.waveform = self.generate_peaks()
+            self.waveform = self.generate_raman()
 
     def generate_raman(self):
-        """ A raman waveform in this context is a baseline with peaks at
-        various extents.
-        """
-        self.raman_peaks = 3
-        self.baseline = 100
-        self.noise_floor = 50
-        self.noise_ceiling = 150
-
-        # First make a pass at the baseline
-        nru = numpy.random.uniform
-        low_data = nru(100, 200, 2048)
-
-        blk = numpy.linspace(0, 0, 2048)
-        for item in range(self.raman_peaks):
-            # get a random position for the peak
-            peak_pos = nru(100, 2037, 1)
-            peak_height = nru(self.baseline, 4000, 1)
-
-            blk[int(peak_pos)] = peak_height
-        
-        self.base_data = low_data + blk
-
-    def generate_peaks(self):
         self.raman_peaks = 3
         self.noise_floor = 50
         self.noise_ceiling = 150
