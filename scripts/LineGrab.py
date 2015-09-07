@@ -55,7 +55,7 @@ class LineGrabApplication(object):
             log.debug("render curve %s Start:%s End:%s" \
                       % (self.curve_render, data[0], data[-1]))
 
-        #self.update_image(data)
+        self.update_image(data)
 
         self.dataTimer.start(0)
 
@@ -87,7 +87,10 @@ class LineGrabApplication(object):
             position += 1
 
         new_data = numpy.array(img_data).astype(float)
-        self.DarkGraphs.reuse_image(new_data)
+
+        mci = self.DarkGraphs.MainImageDialog
+        mci.image.set_data(new_data)
+        mci.get_plot().replot()
 
         self.image_render += 1
         if self.args.testing:
