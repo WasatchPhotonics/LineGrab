@@ -11,7 +11,6 @@ from guiqwt import styles
 from guiqwt import curve
 from guiqwt import builder
 
-from boardtester import visualize as broastervis
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +33,9 @@ class CleanImageDialog(plot.ImageDialog):
         # Note that this disagrees with the documentation 
         local_plot.set_axis_direction("left", False)
 
+        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        self.setStyleSheet(self.chart_style)
+
     def create_image(self):
         """ Create a 2D test pattern image, apply it to the view area.
         """ 
@@ -52,6 +54,18 @@ class CleanImageDialog(plot.ImageDialog):
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
         
+       
+    def load_style_sheet(self, filename):
+        """ Load the qss stylesheet into a string suitable for passing
+        to the main widget.
+        """
+        qss_file = open("linegrab/ui/%s" % filename)
+        temp_string = ""
+        for line in qss_file.readlines():
+            temp_string += line
+           
+        return temp_string
+
 
 
 class CleanCurveDialog(plot.CurveDialog):
@@ -79,9 +93,11 @@ class CleanCurveDialog(plot.CurveDialog):
 
         # Create a default line profile
         self.create_curve()
+        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        self.setStyleSheet(self.chart_style)
 
     def create_curve(self):
-        data_list = range(2048)
+        data_list = range(1024)
         x_axis = range(len(data_list))
         self.curve = curve.CurveItem(self.chart_param)
         self.curve.set_data(x_axis, data_list)
@@ -96,6 +112,17 @@ class CleanCurveDialog(plot.CurveDialog):
         """
         #print "No button layout"
         pass
+       
+    def load_style_sheet(self, filename):
+        """ Load the qss stylesheet into a string suitable for passing
+        to the main widget.
+        """
+        qss_file = open("linegrab/ui/%s" % filename)
+        temp_string = ""
+        for line in qss_file.readlines():
+            temp_string += line
+           
+        return temp_string
 
 
 class DarkGraphs(QtGui.QMainWindow):
@@ -114,32 +141,16 @@ class DarkGraphs(QtGui.QMainWindow):
         from linegrab.ui.linegrab_layout import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.replace_widgets()
         self.setGeometry(450, 350, 1080, 600)
 
-        #self.green_on_black = "background-color: rgba(0,0,0,255);\n" + \
-                              #"color: rgba(0,255,0,255);"
-        #self.MainCurveWidget.setStyleSheet(self.green_on_black)
+        # Make sure the system wide style sheet is applied before the
+        # curve and image widgets style sheets overwrite
         self.setStyleSheet(self.qss_string)
+        self.replace_widgets()
 
-        self.chart_style = self.load_style_sheet("linegrab_custom.css")
-        self.MainCurveWidget.setStyleSheet(self.chart_style)
-        #self.mainImageDialog.setStyleSheet(self.chart_style)
-
-        # Image left, top, right, bottom
-        #self.mainImageDialog.setContentsMargins(10, 0, 0, 0)
-
-        #new_plot = self.MainCurveWidget.get_plot()
-        #new_plot.set_axis_color(3, "Blue")
-
+        self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
         self.show()
 
-
-        self.setup_chart()
-        #self.dev = devices.SimulatedPipeDevice(pattern_jump=50, 1000)
-        #self.dev = devices.SimulatedPipeDevice(pattern_jump=100,
-                                               #top_level=4096)
-       
     def load_style_sheet(self, filename):
         """ Load the qss stylesheet into a string suitable for passing
         to the main widget.
@@ -150,11 +161,6 @@ class DarkGraphs(QtGui.QMainWindow):
             temp_string += line
            
         return temp_string
-
-    def setup_chart(self):
-        self.chart_param = styles.CurveParam()
-        self.chart_param.label = "Data"
-        self.chart_param.line.color = "Green"
 
     def replace_widgets(self):
         # From: http://stackoverflow.com/questions/4625102/\
@@ -183,41 +189,3 @@ class DarkGraphs(QtGui.QMainWindow):
 
 
 
-class DualGraphs(QtGui.QWidget):
-    """ A Qt widget with a line plot at the top and an waterfall view of
-    the line plot data in the bottom frame. 
-    """
-
-    def __init__(self):
-        super(DualGraphs, self).__init__()
-        log.debug("setup ui")
-        self.setupUI()
-        self.show()
-
-    def setupUI(self):
-    
-        self.MainGraph = CleanCurveDialog()
-        chart_style = self.load_style_sheet("linegrab_custom.css")
-        self.MainGraph.setStyleSheet(chart_style)
-        
-
-        self.MainImage = broastervis.SimpleHeatMap()
-
-        vbox = QtGui.QVBoxLayout()
-        vbox.addWidget(self.MainGraph)
-        vbox.addWidget(self.MainImage)
-        self.setLayout(vbox)
-
-        self.setGeometry(100, 100, 800, 600) 
-
-       
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string

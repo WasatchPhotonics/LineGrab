@@ -27,7 +27,7 @@ class LineGrabApplication(object):
         self.parser = self.create_parser()
         self.curve_render = 0
         self.image_render = 0
-        self.image_height = 100
+        self.image_height = 50
         self.image_data = []
 
     def setup_pipe_timer(self):
@@ -90,7 +90,7 @@ class LineGrabApplication(object):
 
         mci = self.DarkGraphs.MainImageDialog
         mci.image.set_data(new_data)
-        mci.get_plot().replot()
+        mci.get_plot().do_autoscale()
 
         self.image_render += 1
         if self.args.testing:
@@ -115,8 +115,8 @@ class LineGrabApplication(object):
         self.args = self.parser.parse_args(argv)
 
         if self.args.source == "simulation":
-            log.info("Create simulated pipe device")
-            self.dev = devices.SimulatedPipeDevice()
+            log.info("Create simulated spectra device")
+            self.dev = devices.SimulatedSpectraDevice()
 
         result = self.dev.setup_pipe()
         log.info("Result of pipe setup: %s" % result)
