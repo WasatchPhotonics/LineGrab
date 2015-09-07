@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>LineGrab</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="iconagraphy.qrc">
+    <normaloff>:/images/LineGrab_Icon.svg</normaloff>:/images/LineGrab_Icon.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -114,7 +118,7 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
@@ -130,108 +134,83 @@
    </property>
    <property name="iconSize">
     <size>
-     <width>24</width>
-     <height>24</height>
+     <width>48</width>
+     <height>48</height>
     </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
-   <addaction name="actionAutoScale"/>
-   <addaction name="actionBiglongone_2"/>
-   <addaction name="actionFull_Extent"/>
-   <addaction name="actionTestaction"/>
-   <addaction name="actionSecondary"/>
-   <addaction name="actionBiglongone"/>
+   <addaction name="actionContinue_Live_Updates"/>
+   <addaction name="actionPause_Live_Updates"/>
+   <addaction name="actionZoom_graph"/>
+   <addaction name="actionReset_Graph"/>
+   <addaction name="separator"/>
+   <addaction name="actionFrameratetext"/>
   </widget>
-  <action name="actionTestaction">
+  <action name="actionPause_Live_Updates">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_play_arrow_black_48px.svg</normaloff>:/material/material/ic_play_arrow_black_48px.svg</iconset>
+     <normaloff>:/greys/greys/pause.svg</normaloff>:/greys/greys/pause.svg</iconset>
    </property>
    <property name="text">
-    <string>testaction</string>
+    <string>Pause Live Updates</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop the curve and image updates</string>
    </property>
   </action>
-  <action name="actionSecondary">
+  <action name="actionContinue_Live_Updates">
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_vertical_align_top_black_48px.svg</normaloff>:/material/material/ic_vertical_align_top_black_48px.svg</iconset>
+     <normaloff>:/greys/greys/forward.svg</normaloff>:/greys/greys/forward.svg</iconset>
    </property>
    <property name="text">
-    <string>secondary</string>
+    <string>Continue Live Updates</string>
+   </property>
+   <property name="toolTip">
+    <string>Restart display of data on curve and image</string>
    </property>
   </action>
-  <action name="actionBiglongone">
+  <action name="actionZoom_graph">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_center_focus_strong_black_48px.svg</normaloff>:/material/material/ic_center_focus_strong_black_48px.svg</iconset>
+     <normaloff>:/greys/greys/zoom.svg</normaloff>:/greys/greys/zoom.svg</iconset>
    </property>
    <property name="text">
-    <string>biglongone</string>
+    <string>Zoom graph</string>
    </property>
    <property name="toolTip">
-    <string>tooltip for big long one</string>
+    <string>Activate zoom control</string>
    </property>
   </action>
-  <action name="actionBiglongone_2">
+  <action name="actionReset_Graph">
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_pause_circle_outline_black_48px.svg</normaloff>:/material/material/ic_pause_circle_outline_black_48px.svg</iconset>
+     <normaloff>:/greys/greys/reset.svg</normaloff>:/greys/greys/reset.svg</iconset>
    </property>
    <property name="text">
-    <string>biglongone</string>
+    <string>Reset Graph</string>
    </property>
    <property name="toolTip">
-    <string>tooltip for big long one</string>
+    <string>Restore curve and image settings to default</string>
    </property>
   </action>
-  <action name="actionPauseDisplay">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_play_arrow_black_48px.svg</normaloff>:/material/material/ic_play_arrow_black_48px.svg</iconset>
-   </property>
+  <action name="actionFrameratetext">
    <property name="text">
-    <string>PauseDisplay</string>
+    <string>frameratetext</string>
    </property>
    <property name="toolTip">
-    <string>Pause the rendering of data</string>
-   </property>
-  </action>
-  <action name="actionAutoScale">
-   <property name="icon">
-    <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_play_circle_outline_black_48px.svg</normaloff>:/material/material/ic_play_circle_outline_black_48px.svg</iconset>
-   </property>
-   <property name="text">
-    <string>AutoScale</string>
-   </property>
-   <property name="toolTip">
-    <string>Toggle auto scaling</string>
-   </property>
-  </action>
-  <action name="actionFull_Extent">
-   <property name="icon">
-    <iconset resource="iconagraphy.qrc">
-     <normaloff>:/material/material/ic_vertical_align_center_black_48px.svg</normaloff>:/material/material/ic_vertical_align_center_black_48px.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Full Extent</string>
-   </property>
-   <property name="toolTip">
-    <string>Show the full extent of data</string>
+    <string>Curve and Image render FPS</string>
    </property>
   </action>
  </widget>
