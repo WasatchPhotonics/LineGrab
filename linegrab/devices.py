@@ -52,7 +52,8 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
         self.spectra_type = spectra_type
 
         if self.spectra_type == "raman":
-            self.waveform = self.generate_raman()
+            #self.waveform = self.generate_raman()
+            self.waveform = self.generate_peaks()
 
     def generate_raman(self):
         """ A raman waveform in this context is a baseline with peaks at
@@ -73,10 +74,54 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
             peak_pos = nru(100, 2037, 1)
             peak_height = nru(self.baseline, 4000, 1)
 
-            blk = numpy.linspace(0, 0, 2048)
-            blk[peak_pos] = peak_height
+            blk[int(peak_pos)] = peak_height
         
         self.base_data = low_data + blk
+
+    def generate_peaks(self):
+        self.raman_peaks = 3
+        self.noise_floor = 50
+        self.noise_ceiling = 150
+        nru = numpy.random.uniform
+
+        low_data = nru(100, 200, 2048)
+        blk = numpy.linspace(0, 0, 2048)
+
+        # up to half the width, add a value that is at least greater
+        # than a threshold, then move the threshold up
+        width = 10
+    
+        half = width / 2
+        min_gap = 10
+
+
+        for position in range(self.raman_peaks):
+
+            # get a random peak within the range
+            peak_pos = int(nru(100, 2037, 1))
+            peak_height = int(nru(500, 1000, 1))
+
+            floor = peak_height + min_gap
+            peak_x = peak_pos
+
+            for item in range(half):
+                new_floor = floor + min_gap
+                new_height = nru(floor, new_floor, 1)
+                new_height = int(new_height)
+                floor = new_floor
+                blk[peak_x] = new_height
+                peak_x += 1
+    
+            for item in range(half):
+                new_floor = floor - min_gap
+                new_height = nru(floor, new_floor, 1)
+                new_height = int(new_height)
+                floor = new_floor
+                blk[peak_x] = new_height
+                peak_x += 1
+    
+        self.base_data = low_data + blk
+
 
     def grab_pipe(self):
         """ Apply randomness at each grab.
