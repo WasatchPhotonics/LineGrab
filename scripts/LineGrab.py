@@ -64,10 +64,12 @@ class LineGrabApplication(object):
             local_plot = self.DarkGraphs.MainImageDialog.get_plot()
             local_plot.do_autoscale()
 
-            # Set the aspect ratio 
-            #ratio = 50 / 1024
-            #local_plot.set_aspect_ratio(1/0.4, lock=False)
-            local_plot.set_aspect_ratio(lock=False)
+            # divided by the width of the image 1.0 / 0.4 is a guessed
+            # value that seems to provide appropriate balance between
+            # startup looks and non-breaking functionality when the
+            # image is clicked.
+            ratio = 1.0 / 0.4
+            local_plot.set_aspect_ratio(ratio, lock=False)
             
             # Change the plot axis to have 0 in the lower left corner
             local_plot.set_axis_limits(0, -5, 50)
