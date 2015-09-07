@@ -45,10 +45,10 @@ class CleanImageDialog(plot.ImageDialog):
         plot.add_item(image)
         plot.do_autoscale()
         
-        for item in plot.get_items():
-            print "Plot items: %s" % item
+        #for item in plot.get_items():
+            #print "Plot items: %s" % item
 
-        print "colormap axis: %s" % plot.colormap_axis
+        #print "colormap axis: %s" % plot.colormap_axis
         plot.enableAxis(plot.colormap_axis, False)
         #for item in plot.get_active_axes():
             #print "axes: %s " % item
@@ -75,7 +75,8 @@ class CleanCurveDialog(plot.CurveDialog):
         """ Do not show the ok, cancel buttons, yet retain the right
         click editing capabilities.
         """
-        print "No button layout"
+        #print "No button layout"
+        pass
 
 class DarkTestApplication(QtGui.QMainWindow):
     """ Import the generated py file from the qt-designer created .ui
@@ -116,8 +117,10 @@ class DarkTestApplication(QtGui.QMainWindow):
 
         self.setup_chart()
         #self.dev = devices.SimulatedPipeDevice(pattern_jump=50, 1000)
-        self.dev = devices.SimulatedPipeDevice(pattern_jump=100,
-                                               top_level=4096)
+        #self.dev = devices.SimulatedPipeDevice(pattern_jump=100,
+                                               #top_level=4096)
+
+        self.dev = devices.SimulatedSpectraDevice()
         result = self.dev.setup_pipe()
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.dark_update)
@@ -156,7 +159,7 @@ class DarkTestApplication(QtGui.QMainWindow):
 
         vlc.insertWidget(0, self.mainCurveWidget)
         vlc.update()
-        print "What is the curve: %r" % self.mainCurveWidget
+        #print "What is the curve: %r" % self.mainCurveWidget
         
 
 
