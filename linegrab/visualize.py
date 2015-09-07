@@ -10,6 +10,7 @@ from guiqwt import plot
 from guiqwt import styles
 from guiqwt import curve
 from guiqwt import builder
+from guiqwt import tools
 
 
 log = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class CleanImageDialog(plot.ImageDialog):
 
         self.chart_style = self.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
+
 
     def create_image(self):
         """ Create a 2D test pattern image, apply it to the view area.
@@ -80,6 +82,12 @@ class CleanCurveDialog(plot.CurveDialog):
     def __init__(self):
         super(CleanCurveDialog, self).__init__(edit=True)
 
+        #graph = CurveDialog(edit=False, toolbar=True, wintitle="Spectra")
+        #for toolklass in (tools.SelectPointTool, tools.LabelTool ):
+            #my_icon = ":/greys/greys/forward.svg"
+            #self.add_tool(toolklass, icon=my_icon)
+
+
         log.debug("new graph")
 
         # Don't show the grid by deleting it. Apparently you can't get
@@ -99,6 +107,7 @@ class CleanCurveDialog(plot.CurveDialog):
         self.create_curve()
         self.chart_style = self.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
+
 
     def create_curve(self):
         data_list = range(1024)
@@ -152,7 +161,26 @@ class DarkGraphs(QtGui.QMainWindow):
         self.setStyleSheet(self.qss_string)
         self.replace_widgets()
 
+        # Align the image with the curve above
         self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
+
+
+        # Add the zoom tool to the main toolbar
+        # First add a plot manager, even though the curve dialog already
+        # has one.
+        #plot_manager = plot.PlotManager(self.MainCurveDialog)
+
+        ## Add a reference to the mainwindow toolbar
+        #plot_manager.add_toolbar(self.ui.toolBar, id(self.ui.toolBar))
+        #add_res = plot_manager.add_tool(tools.RectZoomTool)
+        #add_res.activate()
+
+        #self.MainCurveDialog.add_toolbar(self.ui.toolBar,
+                                         #id(self.ui.toolBar))
+        #self.MainCurveDialog.register_all_image_tools()
+
+        new_toolbar = self.addToolBar("test")
+
         self.show()
 
     def load_style_sheet(self, filename):
@@ -170,14 +198,14 @@ class DarkGraphs(QtGui.QMainWindow):
         # From: http://stackoverflow.com/questions/4625102/\
         # how-to-replace-a-widget-with-another-using-qt
 
-        self.MainCurveWidget = CleanCurveDialog()
+        self.MainCurveDialog = CleanCurveDialog()
  
         lcph = self.ui.labelCurvePlaceholder
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
         lcph.close()
 
-        vlc.insertWidget(0, self.MainCurveWidget)
+        vlc.insertWidget(0, self.MainCurveDialog)
         vlc.update()
         
 

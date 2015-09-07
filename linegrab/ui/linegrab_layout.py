@@ -75,7 +75,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.frameImage)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1080, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1080, 23))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.toolBar = QtGui.QToolBar(MainWindow)

@@ -86,10 +86,10 @@ class LineGrabApplication(object):
         log.debug("render graph")
         x_axis = range(len(data_list))
 
-        mcw = self.DarkGraphs.MainCurveWidget
-        mcw.curve.set_data(x_axis, data_list)
+        mcd = self.DarkGraphs.MainCurveDialog
+        mcd.curve.set_data(x_axis, data_list)
             
-        mcw.get_plot().do_autoscale()
+        mcd.get_plot().do_autoscale()
       
     def update_image(self, data):
         """ Add the line of data to the image data, if it is greater
