@@ -28,7 +28,6 @@ class CleanImageDialog(plot.ImageDialog):
         # Don't show the right side colormap axis
         local_plot = self.get_plot()
         local_plot.enableAxis(local_plot.colormap_axis, False)
-        #self.get_plot().enableAxis(plot.colormap_axis, False)
       
         # Note that this disagrees with the documentation 
         local_plot.set_axis_direction("left", False)
@@ -86,7 +85,7 @@ class CleanCurveDialog(plot.CurveDialog):
         # Initial chart parameters for this graph
         self.chart_param = styles.CurveParam()
         self.chart_param.label = "Data"
-        self.chart_param.line.color = "Green"
+        self.chart_param.line.color = "#00cc00"
 
         # Load an apply this widget's style sheets. Make sure the
         # application wide stylesheet is loaded first

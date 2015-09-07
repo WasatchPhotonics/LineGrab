@@ -57,6 +57,11 @@ class LineGrabApplication(object):
 
         self.update_image(data)
 
+        # If it's the first render, autoscale to make sure it lines up
+        # properly. See update_graph for why this is necessary
+        if self.curve_render == 1:
+            self.DarkGraphs.MainImageDialog.get_plot().do_autoscale()
+
         self.dataTimer.start(0)
 
     def update_graph(self, data_list):
@@ -88,9 +93,12 @@ class LineGrabApplication(object):
 
         new_data = numpy.array(img_data).astype(float)
 
-        mci = self.DarkGraphs.MainImageDialog
-        mci.image.set_data(new_data)
-        mci.get_plot().do_autoscale()
+        mid = self.DarkGraphs.MainImageDialog
+        mid.image.set_data(new_data)
+
+        # If you do autoscale here, it tends to jump around in appearing
+        # to stretch to the window and be in 'normal' size
+        mid.get_plot().replot()
 
         self.image_render += 1
         if self.args.testing:
