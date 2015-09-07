@@ -7,7 +7,14 @@
     <file>material/ic_vertical_align_top_black_48px.svg</file>
     <file>material/ic_play_arrow_black_48px.svg</file>
   </qresource>
+  <qresource prefix="greys">
+    <file>greys/forward.svg</file>
+    <file>greys/pause.svg</file>
+    <file>greys/reset.svg</file>
+    <file>greys/zoom.svg</file>
+  </qresource>
   <qresource prefix="images">
+    <file>LineGrab_Icon.svg</file>
     <file>example_heatmap_with_axis.png</file>
   </qresource>
 </RCC>
