@@ -72,33 +72,9 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
             # get a random position for the peak
             peak_pos = nru(100, 2037, 1)
             peak_height = nru(self.baseline, 4000, 1)
- 
-            # get a random width of the peak
-            peak_width = 30
 
-            # generate a new, blank array, add the peaks
-
-            peak_start = peak_pos - (peak_width / 2)
-            peak_stop = peak_pos + (peak_width / 2)
-
-            heights = numpy.linspace(0, 0, peak_width)
-            for item in range(peak_width/2):
-                heights[item] = peak_height / (item + 1)
-
-            for item in range(peak_width/2):
-                offset = (peak_width - 1 - item)
-                heights[offset] = peak_height / (item + 1)
-
-            position = peak_start
-            while position < peak_stop:
-                sub_pos = 0
-                for item in range(len(heights)):
-                    blk[int(position) + sub_pos] = heights[item]
-                    sub_pos += 1
-                position += 1
-                
-
-
+            blk = numpy.linspace(0, 0, 2048)
+            blk[peak_pos] = peak_height
         
         self.base_data = low_data + blk
 
