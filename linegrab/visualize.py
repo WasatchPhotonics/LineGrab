@@ -9,6 +9,26 @@ from boardtester import visualize as broastervis
 
 log = logging.getLogger(__name__)
 
+class CleanCurveDialog(plot.CurveDialog):
+    def __init__(self):
+        """ A curve dialog with no ok/cancel buttons and the grid item
+        not displayed by default.
+        """
+        super(CleanCurveDialog, self).__init__(edit=True)
+
+        # Don't show the grid by deleting it. Apparently you can't get
+        # it back by deleting it
+        grid_item = self.get_plot().get_items()[0]
+        self.get_plot().del_item(grid_item)
+
+    def install_button_layout(self):
+        """ Do not show the ok, cancel buttons, yet retain the right
+        click editing capabilities.
+        """
+        #print "No button layout"
+        pass
+
+
 class DualGraphs(QtGui.QWidget):
     """ A Qt mainwindow that has a curve plot and image plot wrapper as
     defined in the broaster.
@@ -22,7 +42,8 @@ class DualGraphs(QtGui.QWidget):
 
     def setupUI(self):
     
-        self.MainGraph = broastervis.SimpleLineGraph()
+        #self.MainGraph = broastervis.SimpleLineGraph()
+        self.MainGraph = CleanCurveDialog()
         self.MainImage = broastervis.SimpleHeatMap()
 
         vbox = QtGui.QVBoxLayout()
