@@ -164,22 +164,21 @@ class DarkGraphs(QtGui.QMainWindow):
         # Align the image with the curve above
         self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
 
+        # Add plots to the plot manager
+        self.curve_plot_manager = plot.PlotManager(self)
+        main_curve_plot = self.MainCurveDialog.get_plot()
+        self.curve_plot_manager.add_plot(main_curve_plot)
 
-        # Add the zoom tool to the main toolbar
-        # First add a plot manager, even though the curve dialog already
-        # has one.
-        #plot_manager = plot.PlotManager(self.MainCurveDialog)
+        # Add a panels to the plot manager
+        self.item_list = plot.PlotItemList(self)
+        self.curve_plot_manager.add_panel(self.item_list)
 
-        ## Add a reference to the mainwindow toolbar
-        #plot_manager.add_toolbar(self.ui.toolBar, id(self.ui.toolBar))
-        #add_res = plot_manager.add_tool(tools.RectZoomTool)
-        #add_res.activate()
+        # Associate the toolbar with the plot manager
+        curve_toolbar = self.addToolBar("Curve tools")
+        self.curve_plot_manager.add_toolbar(curve_toolbar,
+                                            id(curve_toolbar))
+        self.curve_plot_manager.register_all_curve_tools()
 
-        #self.MainCurveDialog.add_toolbar(self.ui.toolBar,
-                                         #id(self.ui.toolBar))
-        #self.MainCurveDialog.register_all_image_tools()
-
-        new_toolbar = self.addToolBar("test")
 
         self.show()
 
