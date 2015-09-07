@@ -48,16 +48,28 @@ class LineGrabApplication(object):
         if not result:
             log.warn("Problem reading from pipe")
         
-        self.form.update_graph(data)
-        #self.curve_render += 1
+        self.update_graph(data)
+        self.curve_render += 1
 
-        #if self.args.testing:
-            #log.debug("render curve %s Start:%s End:%s" \
-                      #% (self.curve_render, data[0], data[-1]))
+        if self.args.testing:
+            log.debug("render curve %s Start:%s End:%s" \
+                      % (self.curve_render, data[0], data[-1]))
 
         #self.update_image(data)
 
         self.dataTimer.start(0)
+
+    def update_graph(self, data_list):
+        """ Get the current line plot from the available line graph, 
+        change it's data and replot.
+        """
+        log.debug("render graph")
+        x_axis = range(len(data_list))
+
+        mcw = self.DarkGraphs.MainCurveWidget
+        mcw.curve.set_data(x_axis, data_list)
+            
+        mcw.get_plot().do_autoscale()
       
     def update_image(self, data):
         """ Add the line of data to the image data, if it is greater
@@ -75,7 +87,7 @@ class LineGrabApplication(object):
             position += 1
 
         new_data = numpy.array(img_data).astype(float)
-        self.form.reuse_image(new_data)
+        self.DarkGraphs.reuse_image(new_data)
 
         self.image_render += 1
         if self.args.testing:
@@ -126,22 +138,22 @@ class LineGrabApplication(object):
     def run(self):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
-        self.form = visualize.DualGraphs()
+        self.DarkGraphs = visualize.DarkGraphs()
         self.setup_pipe_timer()
 
         if self.args.testing:
             self.delay_close()
 
-        self.form.show()
+        self.DarkGraphs.show()
         sys.exit(self.app.exec_())
 
     def delay_close(self):
         """ For testing purposes, create a qtimer that triggers the
-        form's close event after a delay.
+        DarkGraphs's close event after a delay.
         """
         log.debug("Trigger delay close")
         self.closeTimer = QtCore.QTimer()
-        self.closeTimer.timeout.connect(self.form.close)
+        self.closeTimer.timeout.connect(self.DarkGraphs.close)
         self.closeTimer.start(3000)
 
 def main(argv=None):

@@ -29,23 +29,9 @@ class Test(unittest.TestCase):
         image_x = self.form.MainImage.x()
         image_y = self.form.MainImage.y()
         self.assertEqual(image_x, 11)
-        self.assertEqual(image_y, 275)
+        self.assertEqual(image_y, 257)
 
         curve_data = numpy.linspace(0, 1000, 1024)
-        self.form.reuse_graph(curve_data)
-
-        img_data = range(200)
-
-        position = 0
-        for item in img_data:
-            img_data[position] = numpy.linspace(50, 0, 1024)
-            position += 1
-
-        data = numpy.array(img_data).astype(float)
-
-        self.form.reuse_image(data)
-        
-
 
 if __name__ == "__main__":
     unittest.main()
