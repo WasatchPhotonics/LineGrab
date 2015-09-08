@@ -150,6 +150,7 @@
    <addaction name="actionReset_Graph"/>
    <addaction name="separator"/>
    <addaction name="actionFrameratetext"/>
+   <addaction name="actionActionSelect"/>
   </widget>
   <action name="actionPause_Live_Updates">
    <property name="checkable">
@@ -211,6 +212,18 @@
    </property>
    <property name="toolTip">
     <string>Curve and Image render FPS</string>
+   </property>
+  </action>
+  <action name="actionActionSelect">
+   <property name="icon">
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/greys/greys/select.svg</normaloff>:/greys/greys/select.svg</iconset>
+   </property>
+   <property name="text">
+    <string>actionSelect</string>
+   </property>
+   <property name="toolTip">
+    <string>placeholder to show select</string>
    </property>
   </action>
  </widget>

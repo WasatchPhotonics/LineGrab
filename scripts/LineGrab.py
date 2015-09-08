@@ -30,6 +30,7 @@ class LineGrabApplication(object):
         self.image_render = 0
         self.image_height = 50
         self.image_data = []
+        self.auto_scale = True
 
     def setup_pipe_timer(self):
         """ This is a non-threaded application that uses qtimers with
@@ -89,7 +90,7 @@ class LineGrabApplication(object):
         mcd = self.DarkGraphs.MainCurveDialog
         mcd.curve.set_data(x_axis, data_list)
           
-        if self.DarkGraphs.auto_scale:  
+        if self.auto_scale:  
             mcd.get_plot().do_autoscale()
         else:
             mcd.get_plot().replot()
@@ -164,10 +165,25 @@ class LineGrabApplication(object):
     
         return parser
 
+    def setup_signals(self):
+        """ Hook into darkgraphs emitted signals for controller level.
+        """
+        dg = self.DarkGraphs
+        
+        dg.zoom_tool.mysig.clicked.connect(self.enter_zoom)
+
+    def enter_zoom(self):
+        """ Zoom clicked
+        """
+        print "zoom clicked"
+        self.auto_scale = False
+
     def run(self):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
         self.DarkGraphs = visualize.DarkGraphs()
+        self.setup_signals()
+
         self.fps = utils.SimpleFPS()
         self.setup_pipe_timer()
 

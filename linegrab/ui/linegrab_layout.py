@@ -107,12 +107,18 @@ class Ui_MainWindow(object):
         self.actionReset_Graph.setObjectName(_fromUtf8("actionReset_Graph"))
         self.actionFrameratetext = QtGui.QAction(MainWindow)
         self.actionFrameratetext.setObjectName(_fromUtf8("actionFrameratetext"))
+        self.actionActionSelect = QtGui.QAction(MainWindow)
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/greys/greys/select.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionActionSelect.setIcon(icon5)
+        self.actionActionSelect.setObjectName(_fromUtf8("actionActionSelect"))
         self.toolBar.addAction(self.actionContinue_Live_Updates)
         self.toolBar.addAction(self.actionPause_Live_Updates)
         self.toolBar.addAction(self.actionZoom_graph)
         self.toolBar.addAction(self.actionReset_Graph)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionFrameratetext)
+        self.toolBar.addAction(self.actionActionSelect)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -131,5 +137,7 @@ class Ui_MainWindow(object):
         self.actionReset_Graph.setToolTip(_translate("MainWindow", "Restore curve and image settings to default", None))
         self.actionFrameratetext.setText(_translate("MainWindow", "frameratetext", None))
         self.actionFrameratetext.setToolTip(_translate("MainWindow", "Curve and Image render FPS", None))
+        self.actionActionSelect.setText(_translate("MainWindow", "actionSelect", None))
+        self.actionActionSelect.setToolTip(_translate("MainWindow", "placeholder to show select", None))
 
 import iconagraphy_rc

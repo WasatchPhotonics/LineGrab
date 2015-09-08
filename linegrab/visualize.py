@@ -132,6 +132,40 @@ class CleanCurveDialog(plot.CurveDialog):
            
         return temp_string
 
+class SelectSignalTool(tools.SelectTool):
+    """ Add signals to the toolklass object for application wide usage
+    as well as the plot context.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(SelectSignalTool, self).__init__(*args, **kwargs)
+
+        class signalObject(QtCore.QObject):
+            clicked = QtCore.pyqtSignal(QtCore.QString)
+        self.mysig = signalObject()
+ 
+    def create_action(self, manager):
+        """This is overriden here to add custom icons without calling
+        guidata.get_icon
+        """
+        my_icon = QtGui.QIcon(":/greys/greys/select.svg")
+
+        self.action = manager.create_action(self.TITLE,
+                                       icon=my_icon,
+                                       tip=self.TIP,
+                                       triggered=self.activate)
+        self.action.setCheckable(True)
+        group = self.manager.get_tool_group("interactive")
+        group.addAction(self.action)
+        self.action.toggled.connect(self.tool_clicked)
+        return self.action
+
+    def tool_clicked(self, action):
+        print "Tool clicked: %s" % action
+        print "action check : %s" % self.action.isChecked()
+        self.mysig.clicked.emit("Test")
+
+
 class ZoomSignalTool(tools.RectZoomTool):
     """ Add signals to the toolklass object for application wide usage
     as well as the plot context.
@@ -159,8 +193,9 @@ class ZoomSignalTool(tools.RectZoomTool):
         group.addAction(action)
         #QObject.connect(group, SIGNAL("triggered(QAction*)"),
                         #self.interactive_triggered)
-        action.triggered.connect(self.other)
-        return action
+        self.action = action
+        self.action.triggered.connect(self.other)
+        return self.action
 
     def other(self, action):
         print "in other: %s" % action
@@ -197,17 +232,7 @@ class DarkGraphs(QtGui.QMainWindow):
 
         self.add_manager_and_tools()
 
-        self.setup_signals()
-
         self.show()
-
-    def setup_signals(self):
-        """ Link visualization level functionality with various signals
-        from the guiqwt widgets.
-        """
-        #result.mysig.clicked.connect(self.enter_zoom)
-        pass
-
 
     def add_manager_and_tools(self):
         """ Create the required plot manager to give access to the item
@@ -233,16 +258,13 @@ class DarkGraphs(QtGui.QMainWindow):
 
         # If you do this, you get all of the other tools
         #self.curve_plot_manager.register_all_curve_tools()
-        result = self.curve_plot_manager.add_tool(ZoomSignalTool)
-        result.mysig.clicked.connect(self.enter_zoom)
-        print "Result is: %s" % result
+        cpm = self.curve_plot_manager
+        self.zoom_tool = cpm.add_tool(ZoomSignalTool)
 
-    def enter_zoom(self):
-        print "Toggle auto scale"
-        if self.auto_scale == True:
-            self.auto_scale = False
-        else:
-            self.auto_scale = True
+        cpm.add_tool(tools.SelectTool)
+        self.select_tool = cpm.add_tool(SelectSignalTool)
+
+        #print "Result is: %s" % result
 
     def load_style_sheet(self, filename):
         """ Load the qss stylesheet into a string suitable for passing
