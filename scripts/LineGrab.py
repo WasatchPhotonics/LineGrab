@@ -39,7 +39,7 @@ class LineGrabApplication(object):
         """
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.update_visuals)
-        self.dataTimer.start(500)
+        self.dataTimer.start(100)
 
     def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
@@ -77,7 +77,7 @@ class LineGrabApplication(object):
 
         self.fps.tick()
         fps_text = "Update: %s FPS" % self.fps.rate()
-        self.DarkGraphs.ui.actionFrameratetext.setText(fps_text)
+        self.actionFPSDisplay.setText(fps_text)
         self.dataTimer.start(0)
 
     def update_graph(self, data_list):
@@ -173,12 +173,39 @@ class LineGrabApplication(object):
         dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
         dg.select_tool.wrap_sig.clicked.connect(self.process_select)
 
+        
+        act_name = "Reset graph parameters"
+        self.actionGraphReset = QtGui.QAction(act_name, self.app)
+        icon4 = QtGui.QIcon(":/greys/greys/reset.svg")
+
+        self.actionGraphReset.setIcon(icon4)
+        dg.curve_toolbar.addAction(self.actionGraphReset)
+        self.actionGraphReset.triggered.connect(self.reset_graph)
+
+        spacer = QtGui.QWidget()
+        spacer.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                             QtGui.QSizePolicy.Expanding)
+        dg.curve_toolbar.addWidget(spacer)
+
+        act_name = "Instantaneous performance"
+        self.actionFPSDisplay = QtGui.QAction(act_name, self.app)
+        dg.curve_toolbar.addAction(self.actionFPSDisplay)
+
+    def reset_graph(self):
+        """ Reset curve, image visualizations to the default.
+        """
+        print "reset"
+        self.auto_scale = True
+        self.DarkGraphs.select_tool.action.setChecked(True)
+        
+ 
     def process_select(self, status):
         print "Select tool clicked %s" % status
 
     def process_zoom(self, status):
         """ Zoom clicked
         """
+        print "Zoom tool clicked %s" % status
         if status == "True":
             self.auto_scale = False
 
@@ -187,6 +214,7 @@ class LineGrabApplication(object):
         self.app = QtGui.QApplication([])
         self.DarkGraphs = visualize.DarkGraphs()
         self.setup_signals()
+        self.reset_graph()
 
         self.fps = utils.SimpleFPS()
         self.setup_pipe_timer()

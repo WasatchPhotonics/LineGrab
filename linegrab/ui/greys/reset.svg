@@ -233,7 +233,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.1043338"
-     inkscape:cx="112.44601"
+     inkscape:cx="61.388356"
      inkscape:cy="70.991597"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -243,9 +243,9 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:window-width="1920"
-     inkscape:window-height="1036"
+     inkscape:window-height="1037"
      inkscape:window-x="0"
-     inkscape:window-y="22"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata6063">
@@ -255,7 +255,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -279,7 +279,7 @@
        inkscape:connector-curvature="0"
        style="fill:url(#SVGID_21_)" />
     <g
-       transform="matrix(0,0.84219523,-0.84219523,0,591.26539,-75.04125)"
+       transform="matrix(0,0.54475266,-0.64595493,0,533.46809,59.945953)"
        id="g89"
        style="fill:url(#linearGradient7243);fill-opacity:1">
       <image
@@ -320,7 +320,7 @@
     </g>
     <g
        id="g340"
-       transform="matrix(0,-0.83943637,-0.83943637,0,443.53653,669.09909)"
+       transform="matrix(0,-0.67705184,-0.63949342,0,419.61991,590.97143)"
        style="fill:#808080;fill-opacity:1">
       <image
          id="image342"
@@ -351,7 +351,7 @@
         </radialGradient>
         <polygon
            id="polygon351"
-           points="435.752,110.521 508.176,170.322 508.176,50.721 435.752,110.521 "
+           points="508.176,170.322 508.176,50.721 435.752,110.521 435.752,110.521 "
            style="fill:#808080;fill-opacity:1" />
       </g>
     </g>

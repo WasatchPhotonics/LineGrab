@@ -134,9 +134,12 @@
    </property>
    <property name="iconSize">
     <size>
-     <width>48</width>
-     <height>48</height>
+     <width>36</width>
+     <height>36</height>
     </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -146,11 +149,26 @@
    </attribute>
    <addaction name="actionContinue_Live_Updates"/>
    <addaction name="actionPause_Live_Updates"/>
-   <addaction name="actionZoom_graph"/>
-   <addaction name="actionReset_Graph"/>
-   <addaction name="separator"/>
-   <addaction name="actionFrameratetext"/>
-   <addaction name="actionActionSelect"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_GraphControls">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar_GraphControls</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>36</width>
+     <height>36</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionPause_Live_Updates">
    <property name="checkable">
@@ -168,6 +186,9 @@
    </property>
   </action>
   <action name="actionContinue_Live_Updates">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
      <normaloff>:/greys/greys/forward.svg</normaloff>:/greys/greys/forward.svg</iconset>
@@ -206,15 +227,10 @@
     <string>Restore curve and image settings to default</string>
    </property>
   </action>
-  <action name="actionFrameratetext">
-   <property name="text">
-    <string>frameratetext</string>
-   </property>
-   <property name="toolTip">
-    <string>Curve and Image render FPS</string>
-   </property>
-  </action>
   <action name="actionActionSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="iconagraphy.qrc">
      <normaloff>:/greys/greys/select.svg</normaloff>:/greys/greys/select.svg</iconset>

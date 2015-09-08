@@ -193,8 +193,6 @@ class ZoomSignalTool(tools.RectZoomTool):
         action.setCheckable(True)
         group = self.manager.get_tool_group("interactive")
         group.addAction(action)
-        #QObject.connect(group, SIGNAL("triggered(QAction*)"),
-                        #self.interactive_triggered)
         self.action = action
         self.action.triggered.connect(self.tool_clicked)
         return self.action
@@ -257,19 +255,18 @@ class DarkGraphs(QtGui.QMainWindow):
         # Associate the toolbar with the plot manager, this is created
         # along with the qmainwindow toolbars
         curve_toolbar = self.addToolBar("Curve tools")
-        curve_toolbar.setIconSize(QtCore.QSize(48, 48))
+        curve_toolbar.setIconSize(QtCore.QSize(36, 36))
         self.curve_plot_manager.add_toolbar(curve_toolbar,
                                             id(curve_toolbar))
 
         # If you do this, you get all of the other tools
         #self.curve_plot_manager.register_all_curve_tools()
         cpm = self.curve_plot_manager
+        self.select_tool = cpm.add_tool(SelectSignalTool)
         self.zoom_tool = cpm.add_tool(ZoomSignalTool)
 
-        cpm.add_tool(tools.SelectTool)
-        self.select_tool = cpm.add_tool(SelectSignalTool)
-
-        #print "Result is: %s" % result
+        # Store a reference for use by the application
+        self.curve_toolbar = curve_toolbar
 
     def load_style_sheet(self, filename):
         """ Load the qss stylesheet into a string suitable for passing
