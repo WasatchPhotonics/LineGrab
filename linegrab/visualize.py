@@ -12,6 +12,7 @@ from guiqwt import curve
 from guiqwt import builder
 from guiqwt import tools
 
+from linegrab import utils
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ class CleanImageDialog(plot.ImageDialog):
         # Note that this disagrees with the documentation 
         local_plot.set_axis_direction("left", False)
 
-        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        self.chart_style = utils.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
 
 
@@ -59,20 +60,6 @@ class CleanImageDialog(plot.ImageDialog):
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
         
-        
-       
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
-
-
 
 class CleanCurveDialog(plot.CurveDialog):
     """ A curve dialog with no ok/cancel buttons and the grid item
@@ -98,7 +85,7 @@ class CleanCurveDialog(plot.CurveDialog):
 
         # Create a default line profile
         self.create_curve()
-        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        self.chart_style = utils.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
 
 
@@ -121,16 +108,6 @@ class CleanCurveDialog(plot.CurveDialog):
         #print "No button layout"
         pass
        
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
 
 class SelectSignalTool(tools.SelectTool):
     """ Add signals to the toolklass object for application wide usage
@@ -215,7 +192,7 @@ class DarkGraphs(QtGui.QMainWindow):
     def __init__(self):
         super(DarkGraphs, self).__init__()
 
-        self.qss_string = self.load_style_sheet("qdarkstyle.css")
+        self.qss_string = utils.load_style_sheet("qdarkstyle.css")
         self.image_height = 50
         self.image_data = []
         self.auto_scale = True
@@ -268,17 +245,6 @@ class DarkGraphs(QtGui.QMainWindow):
 
         # Store a reference for use by the application
         self.curve_toolbar = curve_toolbar
-
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
 
     def replace_widgets(self):
         # From: http://stackoverflow.com/questions/4625102/\

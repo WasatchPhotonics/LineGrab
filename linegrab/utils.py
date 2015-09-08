@@ -3,6 +3,17 @@ application.
 """
 
 from PyQt4.QtCore import QTimer
+    
+def load_style_sheet(filename):
+    """ Load the qss stylesheet into a string suitable for passing
+    to the main widget.
+    """
+    qss_file = open("linegrab/ui/%s" % filename)
+    temp_string = ""
+    for line in qss_file.readlines():
+        temp_string += line
+       
+    return temp_string
 
 class SimpleFPS(object):
     """ Use qtimer and a tick function to return the number of ticks
