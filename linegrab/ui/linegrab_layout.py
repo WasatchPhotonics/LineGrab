@@ -118,8 +118,17 @@ class Ui_MainWindow(object):
         icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/greys/greys/select.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionActionSelect.setIcon(icon5)
         self.actionActionSelect.setObjectName(_fromUtf8("actionActionSelect"))
+        self.actionFull_extent = QtGui.QAction(MainWindow)
+        icon6 = QtGui.QIcon()
+        icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/greys/greys/full_extent.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionFull_extent.setIcon(icon6)
+        self.actionFull_extent.setObjectName(_fromUtf8("actionFull_extent"))
         self.toolBar.addAction(self.actionContinue_Live_Updates)
         self.toolBar.addAction(self.actionPause_Live_Updates)
+        self.toolBar_GraphControls.addAction(self.actionActionSelect)
+        self.toolBar_GraphControls.addAction(self.actionZoom_graph)
+        self.toolBar_GraphControls.addAction(self.actionFull_extent)
+        self.toolBar_GraphControls.addAction(self.actionReset_Graph)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -139,5 +148,6 @@ class Ui_MainWindow(object):
         self.actionReset_Graph.setToolTip(_translate("MainWindow", "Restore curve and image settings to default", None))
         self.actionActionSelect.setText(_translate("MainWindow", "actionSelect", None))
         self.actionActionSelect.setToolTip(_translate("MainWindow", "placeholder to show select", None))
+        self.actionFull_extent.setText(_translate("MainWindow", "Full extent", None))
 
 import iconagraphy_rc
