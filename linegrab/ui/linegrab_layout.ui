@@ -169,6 +169,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionActionSelect"/>
+   <addaction name="actionZoom_graph"/>
+   <addaction name="actionFull_extent"/>
+   <addaction name="actionReset_Graph"/>
   </widget>
   <action name="actionPause_Live_Updates">
    <property name="checkable">
@@ -240,6 +244,15 @@
    </property>
    <property name="toolTip">
     <string>placeholder to show select</string>
+   </property>
+  </action>
+  <action name="actionFull_extent">
+   <property name="icon">
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/greys/greys/full_extent.svg</normaloff>:/greys/greys/full_extent.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Full extent</string>
    </property>
   </action>
  </widget>
