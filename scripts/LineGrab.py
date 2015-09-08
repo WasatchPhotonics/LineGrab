@@ -18,6 +18,9 @@ logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
 log = logging.getLogger()
 
+stderr_handler = logging.StreamHandler()
+log.addHandler(stderr_handler)
+
 class LineGrabApplication(object):
     """ Create the window with the graphs, setup communication based on
     the specified device.
@@ -84,7 +87,7 @@ class LineGrabApplication(object):
         """ Get the current line plot from the available line graph, 
         change it's data and replot.
         """
-        log.debug("render graph")
+        #log.debug("render graph")
         x_axis = range(len(data_list))
 
         mcd = self.DarkGraphs.MainCurveDialog
@@ -173,12 +176,18 @@ class LineGrabApplication(object):
         dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
         dg.select_tool.wrap_sig.clicked.connect(self.process_select)
 
+        act_name = "Full extent graph"
+        self.actionGraphFullExtent = QtGui.QAction(act_name, self.app)
+        temp_icon = QtGui.QIcon(":/greys/greys/full_extent.svg")
+        self.actionGraphFullExtent.setIcon(temp_icon)
+        dg.curve_toolbar.addAction(self.actionGraphFullExtent)
+        self.actionGraphFullExtent.triggered.connect(self.full_extent)
         
         act_name = "Reset graph parameters"
         self.actionGraphReset = QtGui.QAction(act_name, self.app)
-        icon4 = QtGui.QIcon(":/greys/greys/reset.svg")
+        temp_icon = QtGui.QIcon(":/greys/greys/reset.svg")
 
-        self.actionGraphReset.setIcon(icon4)
+        self.actionGraphReset.setIcon(temp_icon)
         dg.curve_toolbar.addAction(self.actionGraphReset)
         self.actionGraphReset.triggered.connect(self.reset_graph)
 
@@ -191,13 +200,24 @@ class LineGrabApplication(object):
         self.actionFPSDisplay = QtGui.QAction(act_name, self.app)
         dg.curve_toolbar.addAction(self.actionFPSDisplay)
 
+        # Remove the placeholder toolbar
+        dg.ui.toolBar_GraphControls.setVisible(False)
+
+    def full_extent(self):
+        """ Set the x axis to the full data range (12-bit), and set auto
+        scale off.
+        """
+        log.debug("Set full extent")
+        self.auto_scale = False
+        local_plot = self.DarkGraphs.MainCurveDialog.get_plot()
+        local_plot.set_axis_limits(0, 0, 4096)
+
     def reset_graph(self):
         """ Reset curve, image visualizations to the default.
         """
         print "reset"
         self.auto_scale = True
         self.DarkGraphs.select_tool.action.setChecked(True)
-        
  
     def process_select(self, status):
         print "Select tool clicked %s" % status

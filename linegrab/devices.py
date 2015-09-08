@@ -55,7 +55,7 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
             self.waveform = self.generate_raman()
 
     def generate_raman(self):
-        self.raman_peaks = 3
+        self.raman_peaks = 10
         self.noise_floor = 50
         self.noise_ceiling = 150
         nru = numpy.random.uniform

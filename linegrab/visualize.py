@@ -54,7 +54,7 @@ class CleanImageDialog(plot.ImageDialog):
         new_data = numpy.array(base_data).astype(float)
 
         bmi = builder.make.image
-        self.image = bmi(new_data, colormap="bone")
+        self.image = bmi(new_data, colormap="gist_earth")
         local_plot = self.get_plot()
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
@@ -231,7 +231,7 @@ class DarkGraphs(QtGui.QMainWindow):
         self.replace_widgets()
 
         # Align the image with the curve above
-        self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
+        self.MainImageDialog.setContentsMargins(17, 0, 0, 0)
 
         self.add_manager_and_tools()
 
@@ -261,6 +261,7 @@ class DarkGraphs(QtGui.QMainWindow):
 
         # If you do this, you get all of the other tools
         #self.curve_plot_manager.register_all_curve_tools()
+
         cpm = self.curve_plot_manager
         self.select_tool = cpm.add_tool(SelectSignalTool)
         self.zoom_tool = cpm.add_tool(ZoomSignalTool)
