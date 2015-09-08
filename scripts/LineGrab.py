@@ -88,8 +88,11 @@ class LineGrabApplication(object):
 
         mcd = self.DarkGraphs.MainCurveDialog
         mcd.curve.set_data(x_axis, data_list)
-            
-        mcd.get_plot().do_autoscale()
+          
+        if self.DarkGraphs.auto_scale:  
+            mcd.get_plot().do_autoscale()
+        else:
+            mcd.get_plot().replot()
       
     def update_image(self, data):
         """ Add the line of data to the image data, if it is greater

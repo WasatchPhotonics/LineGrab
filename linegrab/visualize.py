@@ -81,13 +81,6 @@ class CleanCurveDialog(plot.CurveDialog):
 
     def __init__(self):
         super(CleanCurveDialog, self).__init__(edit=True)
-
-        #graph = CurveDialog(edit=False, toolbar=True, wintitle="Spectra")
-        #for toolklass in (tools.SelectPointTool, tools.LabelTool ):
-            #my_icon = ":/greys/greys/forward.svg"
-            #self.add_tool(toolklass, icon=my_icon)
-
-
         log.debug("new graph")
 
         # Don't show the grid by deleting it. Apparently you can't get
@@ -110,6 +103,8 @@ class CleanCurveDialog(plot.CurveDialog):
 
 
     def create_curve(self):
+        """ Create a placeholder curve, add it to the current plot.
+        """
         data_list = range(1024)
         x_axis = range(len(data_list))
         self.curve = curve.CurveItem(self.chart_param)
@@ -137,13 +132,22 @@ class CleanCurveDialog(plot.CurveDialog):
            
         return temp_string
 
-class MyTool(tools.RectZoomTool):
-    def noninitfunction(self):
-        #super(MyTool, self).__init__()
-        print "my tool init"
+class ZoomSignalTool(tools.RectZoomTool):
+    """ Add signals to the toolklass object for application wide usage
+    as well as the plot context.
+    """
 
+    def __init__(self, *args, **kwargs):
+        super(ZoomSignalTool, self).__init__(*args, **kwargs)
+
+        class signalObject(QtCore.QObject):
+            clicked = QtCore.pyqtSignal(QtCore.QString)
+        self.mysig = signalObject()
+ 
     def create_action(self, manager):
-        """Create and return tool's action"""
+        """This is overriden here to add custom icons without calling
+        guidata.get_icon
+        """
         my_icon = QtGui.QIcon(":/greys/greys/zoom.svg")
 
         action = manager.create_action(self.TITLE,
@@ -155,7 +159,12 @@ class MyTool(tools.RectZoomTool):
         group.addAction(action)
         #QObject.connect(group, SIGNAL("triggered(QAction*)"),
                         #self.interactive_triggered)
+        action.triggered.connect(self.other)
         return action
+
+    def other(self, action):
+        print "in other: %s" % action
+        self.mysig.clicked.emit("Test")
 
 
 
@@ -171,6 +180,7 @@ class DarkGraphs(QtGui.QMainWindow):
         self.qss_string = self.load_style_sheet("qdarkstyle.css")
         self.image_height = 50
         self.image_data = []
+        self.auto_scale = True
 
         from linegrab.ui.linegrab_layout import Ui_MainWindow
         self.ui = Ui_MainWindow()
@@ -185,7 +195,27 @@ class DarkGraphs(QtGui.QMainWindow):
         # Align the image with the curve above
         self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
 
-        # Add plots to the plot manager
+        self.add_manager_and_tools()
+
+        self.setup_signals()
+
+        self.show()
+
+    def setup_signals(self):
+        """ Link visualization level functionality with various signals
+        from the guiqwt widgets.
+        """
+        #result.mysig.clicked.connect(self.enter_zoom)
+        pass
+
+
+    def add_manager_and_tools(self):
+        """ Create the required plot manager to give access to the item
+        list, graph tools, etc.
+        """
+        # Create a new plot manager, add plots to the plot manager.
+        # There is already a plot manager associated with the
+        # curvedialog, just create a new one for simplicity.
         self.curve_plot_manager = plot.PlotManager(self)
         main_curve_plot = self.MainCurveDialog.get_plot()
         self.curve_plot_manager.add_plot(main_curve_plot)
@@ -203,15 +233,16 @@ class DarkGraphs(QtGui.QMainWindow):
 
         # If you do this, you get all of the other tools
         #self.curve_plot_manager.register_all_curve_tools()
+        result = self.curve_plot_manager.add_tool(ZoomSignalTool)
+        result.mysig.clicked.connect(self.enter_zoom)
+        print "Result is: %s" % result
 
-        # Does this need to go before register?
-        #my_rect = tools.RectZoomTool(self.curve_plot_manager,
-                                     #id(curve_toolbar))
-        #result = self.curve_plot_manager.add_tool(tools.RectZoomTool)
-        result = self.curve_plot_manager.add_tool(MyTool)
-
-
-        self.show()
+    def enter_zoom(self):
+        print "Toggle auto scale"
+        if self.auto_scale == True:
+            self.auto_scale = False
+        else:
+            self.auto_scale = True
 
     def load_style_sheet(self, filename):
         """ Load the qss stylesheet into a string suitable for passing
