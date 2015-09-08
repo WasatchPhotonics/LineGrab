@@ -4,7 +4,7 @@
 import numpy
 import logging
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 from guiqwt import plot
 from guiqwt import styles
@@ -137,6 +137,27 @@ class CleanCurveDialog(plot.CurveDialog):
            
         return temp_string
 
+class MyTool(tools.RectZoomTool):
+    def noninitfunction(self):
+        #super(MyTool, self).__init__()
+        print "my tool init"
+
+    def create_action(self, manager):
+        """Create and return tool's action"""
+        my_icon = QtGui.QIcon(":/greys/greys/zoom.svg")
+
+        action = manager.create_action(self.TITLE,
+                                       icon=my_icon,
+                                       tip=self.TIP,
+                                       triggered=self.activate)
+        action.setCheckable(True)
+        group = self.manager.get_tool_group("interactive")
+        group.addAction(action)
+        #QObject.connect(group, SIGNAL("triggered(QAction*)"),
+                        #self.interactive_triggered)
+        return action
+
+
 
 class DarkGraphs(QtGui.QMainWindow):
     """ Import the generated py file from the qt-designer created .ui
@@ -173,11 +194,21 @@ class DarkGraphs(QtGui.QMainWindow):
         self.item_list = plot.PlotItemList(self)
         self.curve_plot_manager.add_panel(self.item_list)
 
-        # Associate the toolbar with the plot manager
+        # Associate the toolbar with the plot manager, this is created
+        # along with the qmainwindow toolbars
         curve_toolbar = self.addToolBar("Curve tools")
+        curve_toolbar.setIconSize(QtCore.QSize(48, 48))
         self.curve_plot_manager.add_toolbar(curve_toolbar,
                                             id(curve_toolbar))
-        self.curve_plot_manager.register_all_curve_tools()
+
+        # If you do this, you get all of the other tools
+        #self.curve_plot_manager.register_all_curve_tools()
+
+        # Does this need to go before register?
+        #my_rect = tools.RectZoomTool(self.curve_plot_manager,
+                                     #id(curve_toolbar))
+        #result = self.curve_plot_manager.add_tool(tools.RectZoomTool)
+        result = self.curve_plot_manager.add_tool(MyTool)
 
 
         self.show()
