@@ -142,7 +142,7 @@ class SelectSignalTool(tools.SelectTool):
 
         class signalObject(QtCore.QObject):
             clicked = QtCore.pyqtSignal(QtCore.QString)
-        self.mysig = signalObject()
+        self.wrap_sig = signalObject()
  
     def create_action(self, manager):
         """This is overriden here to add custom icons without calling
@@ -161,9 +161,11 @@ class SelectSignalTool(tools.SelectTool):
         return self.action
 
     def tool_clicked(self, action):
-        print "Tool clicked: %s" % action
-        print "action check : %s" % self.action.isChecked()
-        self.mysig.clicked.emit("Test")
+        """ Convenience signal wrapper to emit the boolean of the action
+        checked status.
+        """
+        status = self.action.isChecked()
+        self.wrap_sig.clicked.emit("%s" % status)
 
 
 class ZoomSignalTool(tools.RectZoomTool):
@@ -176,7 +178,7 @@ class ZoomSignalTool(tools.RectZoomTool):
 
         class signalObject(QtCore.QObject):
             clicked = QtCore.pyqtSignal(QtCore.QString)
-        self.mysig = signalObject()
+        self.wrap_sig = signalObject()
  
     def create_action(self, manager):
         """This is overriden here to add custom icons without calling
@@ -194,12 +196,15 @@ class ZoomSignalTool(tools.RectZoomTool):
         #QObject.connect(group, SIGNAL("triggered(QAction*)"),
                         #self.interactive_triggered)
         self.action = action
-        self.action.triggered.connect(self.other)
+        self.action.triggered.connect(self.tool_clicked)
         return self.action
 
-    def other(self, action):
-        print "in other: %s" % action
-        self.mysig.clicked.emit("Test")
+    def tool_clicked(self, action):
+        """ Convenience signal wrapper to emit the boolean of the action
+        checked status.
+        """
+        status = self.action.isChecked()
+        self.wrap_sig.clicked.emit("%s" % status)
 
 
 

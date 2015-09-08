@@ -170,13 +170,17 @@ class LineGrabApplication(object):
         """
         dg = self.DarkGraphs
         
-        dg.zoom_tool.mysig.clicked.connect(self.enter_zoom)
+        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
+        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
 
-    def enter_zoom(self):
+    def process_select(self, status):
+        print "Select tool clicked %s" % status
+
+    def process_zoom(self, status):
         """ Zoom clicked
         """
-        print "zoom clicked"
-        self.auto_scale = False
+        if status == "True":
+            self.auto_scale = False
 
     def run(self):
         log.debug("Create application")
