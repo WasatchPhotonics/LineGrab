@@ -53,6 +53,13 @@ class LineGrabApplication(object):
         if not result:
             log.warn("Problem reading from pipe")
         
+        if self.live_updates == False:
+            self.fps.tick()
+            fps_text = "Update: %s FPS" % self.fps.rate()
+            self.actionFPSDisplay.setText(fps_text)
+            self.dataTimer.start(0)
+            return
+
         self.update_graph(data)
         self.curve_render += 1
 
@@ -203,6 +210,30 @@ class LineGrabApplication(object):
         # Remove the placeholder toolbar
         dg.ui.toolBar_GraphControls.setVisible(False)
 
+        # Hook the play/pause buttons
+        dg.ui.actionContinue_Live_Updates.triggered.connect(self.on_live)
+        dg.ui.actionPause_Live_Updates.triggered.connect(self.on_pause)
+        dg.ui.actionContinue_Live_Updates.trigger()
+        
+
+    def on_live(self, action):
+        log.info("Click live updates")
+        dgui = self.DarkGraphs.ui
+        if action == False:
+            dgui.actionContinue_Live_Updates.setChecked(True)
+
+        self.DarkGraphs.ui.actionPause_Live_Updates.setChecked(False)
+        self.live_updates = True
+
+    def on_pause(self, action):
+        log.info("Pause live updates: %s" % action)
+        dgui = self.DarkGraphs.ui
+        if action == False:
+            dgui.actionPause_Live_Updates.setChecked(True)
+        # Only way to get out of pause mode is to click the live button
+        self.DarkGraphs.ui.actionContinue_Live_Updates.setChecked(False)
+        self.live_updates = False
+
     def full_extent(self):
         """ Set the x axis to the full data range (12-bit), and set auto
         scale off.
@@ -211,13 +242,20 @@ class LineGrabApplication(object):
         self.auto_scale = False
         local_plot = self.DarkGraphs.MainCurveDialog.get_plot()
         local_plot.set_axis_limits(0, 0, 4096)
+        local_plot.replot()
 
     def reset_graph(self):
-        """ Reset curve, image visualizations to the default.
+        """ Reset curve, image visualizations to the default. Trigger a
+        auto scale replot manually in case pause mode is active.
         """
         print "reset"
         self.auto_scale = True
         self.DarkGraphs.select_tool.action.setChecked(True)
+        dgplot = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgplot.do_autoscale()
+
+        dgimage = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgimage.do_autoscale()
  
     def process_select(self, status):
         print "Select tool clicked %s" % status
