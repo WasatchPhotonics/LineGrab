@@ -50,42 +50,47 @@ class LineGrabApplication(object):
         if not result:
             log.warn("Problem reading from pipe")
         
-        if self.live_updates == False:
-            self.fps.tick()
-            fps_text = "Update: %s FPS" % self.fps.rate()
-            self.actionFPSDisplay.setText(fps_text)
-            self.dataTimer.start(0)
-            return
-
-        self.update_graph(data)
-        self.curve_render += 1
+        if self.live_updates == True:
+            self.update_graph(data)
+            self.curve_render += 1
+            self.update_image(data)
+            self.check_image(self.curve_render)
 
         if self.args.testing:
             log.debug("render curve %s Start:%s End:%s" \
                       % (self.curve_render, data[0], data[-1]))
 
-        self.update_image(data)
+        self.update_fps()
+        self.dataTimer.start(0)
+
+    def check_image(self, render_count):
+        """ Provide post-data population and form showing alignment and
+        rendering of the image area.
+        """
+        if render_count != 1:
+            return
 
         # If it's the first render, autoscale to make sure it lines up
         # properly. See update_image for why this is necessary
-        if self.curve_render == 1:
-            local_plot = self.DarkGraphs.MainImageDialog.get_plot()
-            local_plot.do_autoscale()
+        local_plot = self.DarkGraphs.MainImageDialog.get_plot()
+        local_plot.do_autoscale()
 
-            # divided by the width of the image 1.0 / 0.4 is a guessed
-            # value that seems to provide appropriate balance between
-            # startup looks and non-breaking functionality when the
-            # image is clicked.
-            ratio = 1.0 / 0.4
-            local_plot.set_aspect_ratio(ratio, lock=False)
-            
-            # Change the plot axis to have 0 in the lower left corner
-            local_plot.set_axis_limits(0, -5, 50)
+        # divided by the width of the image 1.0 / 0.4 is a guessed
+        # value that seems to provide appropriate balance between
+        # startup looks and non-breaking functionality when the
+        # image is clicked.
+        ratio = 1.0 / 0.4
+        local_plot.set_aspect_ratio(ratio, lock=False)
+        
+        # Change the plot axis to have 0 in the lower left corner
+        local_plot.set_axis_limits(0, -5, 50)
 
+    def update_fps(self):
+        """ Add tick, display the current rate.
+        """
         self.fps.tick()
         fps_text = "Update: %s FPS" % self.fps.rate()
         self.actionFPSDisplay.setText(fps_text)
-        self.dataTimer.start(0)
 
     def update_graph(self, data_list):
         """ Get the current line plot from the available line graph, 
@@ -301,7 +306,7 @@ class LineGrabApplication(object):
         self.fps = utils.SimpleFPS()
 
         # Click the live button
-        dg.ui.actionContinue_Live_Updates.trigger()
+        self.DarkGraphs.ui.actionContinue_Live_Updates.trigger()
 
     def run(self):
         """ This is the application code that is called by the main
@@ -332,7 +337,6 @@ def main(argv=None):
 
     exit_code = 0
     try:
-        
         lngapp = LineGrabApplication()
         lngapp.parse_args(argv)
         lngapp.run()
