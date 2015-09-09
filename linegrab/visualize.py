@@ -251,7 +251,7 @@ class DarkGraphs(QtGui.QMainWindow):
         # how-to-replace-a-widget-with-another-using-qt
 
         self.MainCurveDialog = CleanCurveDialog()
- 
+         
         lcph = self.ui.labelCurvePlaceholder
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
@@ -259,7 +259,6 @@ class DarkGraphs(QtGui.QMainWindow):
 
         vlc.insertWidget(0, self.MainCurveDialog)
         vlc.update()
-        
 
         self.MainImageDialog = CleanImageDialog()
 
