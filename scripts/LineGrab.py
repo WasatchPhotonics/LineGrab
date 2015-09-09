@@ -17,7 +17,6 @@ from linegrab import utils
 logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
 log = logging.getLogger()
-log.debug("module level")
 #stderr_handler = logging.StreamHandler()
 #log.addHandler(stderr_handler)
 
@@ -271,6 +270,7 @@ class LineGrabApplication(object):
     def run(self):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
+        log.debug("visualize darkgraphs")
         self.DarkGraphs = visualize.DarkGraphs()
         self.setup_signals()
         self.reset_graph()
