@@ -17,9 +17,9 @@ from linegrab import utils
 logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
 log = logging.getLogger()
-
-stderr_handler = logging.StreamHandler()
-log.addHandler(stderr_handler)
+log.debug("module level")
+#stderr_handler = logging.StreamHandler()
+#log.addHandler(stderr_handler)
 
 class LineGrabApplication(object):
     """ Create the window with the graphs, setup communication based on
@@ -149,6 +149,7 @@ class LineGrabApplication(object):
     def parse_args(self, argv):
         """ Handle any bad arguments, then set defaults
         """
+        log.info("Parse args: %s" % argv)
         self.args = self.parser.parse_args(argv)
 
         if self.args.source == "simulation":
