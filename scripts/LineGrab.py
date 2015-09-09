@@ -17,8 +17,6 @@ from linegrab import utils
 logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
 log = logging.getLogger()
-#stderr_handler = logging.StreamHandler()
-#log.addHandler(stderr_handler)
 
 class LineGrabApplication(object):
     """ Create the window with the graphs, setup communication based on
@@ -41,7 +39,7 @@ class LineGrabApplication(object):
         """
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.update_visuals)
-        self.dataTimer.start(100)
+        self.dataTimer.start(0)
 
     def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
@@ -69,7 +67,7 @@ class LineGrabApplication(object):
         self.update_image(data)
 
         # If it's the first render, autoscale to make sure it lines up
-        # properly. See update_graph for why this is necessary
+        # properly. See update_image for why this is necessary
         if self.curve_render == 1:
             local_plot = self.DarkGraphs.MainImageDialog.get_plot()
             local_plot.do_autoscale()
@@ -146,9 +144,9 @@ class LineGrabApplication(object):
 
 
     def parse_args(self, argv):
-        """ Handle any bad arguments, then set defaults
+        """ Handle any bad arguments, then set defaults. Creates
+        connection to pipe data source.
         """
-        log.info("Parse args: %s" % argv)
         self.args = self.parser.parse_args(argv)
 
         if self.args.source == "simulation":
@@ -175,28 +173,22 @@ class LineGrabApplication(object):
     
         return parser
 
-    def setup_signals(self):
-        """ Hook into darkgraphs emitted signals for controller level.
+    def create_actions(self):
+        """ Runtime generated toolbars to link guiqwt graph controls
+        with the mainwindow level toolbars.
         """
         dg = self.DarkGraphs
-        
-        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
-        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
+        dgct = self.DarkGraphs.curve_toolbar.addAction
 
-        act_name = "Full extent graph"
-        self.actionGraphFullExtent = QtGui.QAction(act_name, self.app)
-        temp_icon = QtGui.QIcon(":/greys/greys/full_extent.svg")
-        self.actionGraphFullExtent.setIcon(temp_icon)
-        dg.curve_toolbar.addAction(self.actionGraphFullExtent)
-        self.actionGraphFullExtent.triggered.connect(self.full_extent)
-        
-        act_name = "Reset graph parameters"
-        self.actionGraphReset = QtGui.QAction(act_name, self.app)
-        temp_icon = QtGui.QIcon(":/greys/greys/reset.svg")
+        agfe = dgct(QtGui.QIcon(":/greys/greys/full_extent.svg"),
+                    "Full extent graph"
+                   )
+        self.actionGraphFullExtent = agfe
 
-        self.actionGraphReset.setIcon(temp_icon)
-        dg.curve_toolbar.addAction(self.actionGraphReset)
-        self.actionGraphReset.triggered.connect(self.reset_graph)
+        agr = dgct(QtGui.QIcon(":/greys/greys/reset.svg"),
+                   "Reset graph parameters"
+                  )
+        self.actionGraphReset = agr
 
         spacer = QtGui.QWidget()
         spacer.setSizePolicy(QtGui.QSizePolicy.Expanding,
@@ -210,13 +202,27 @@ class LineGrabApplication(object):
         # Remove the placeholder toolbar
         dg.ui.toolBar_GraphControls.setVisible(False)
 
+    def setup_signals(self):
+        """ Hook into darkgraphs emitted signals for controller level.
+        """
+        dg = self.DarkGraphs
+
         # Hook the play/pause buttons
         dg.ui.actionContinue_Live_Updates.triggered.connect(self.on_live)
         dg.ui.actionPause_Live_Updates.triggered.connect(self.on_pause)
-        dg.ui.actionContinue_Live_Updates.trigger()
-        
+       
+        # Custom graph buttons 
+        self.actionGraphReset.triggered.connect(self.reset_graph)
+        self.actionGraphFullExtent.triggered.connect(self.full_extent)
+
+        # Custom tools generated in visualize that are not actions
+        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
+        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
 
     def on_live(self, action):
+        """ Live and pause buttons are the equivalent of toggle buttons.
+        Only one can be enabled at a time.
+        """
         log.info("Click live updates")
         dgui = self.DarkGraphs.ui
         if action == False:
@@ -226,11 +232,14 @@ class LineGrabApplication(object):
         self.live_updates = True
 
     def on_pause(self, action):
+        """ Pause and live buttons are the equivalent of toggle buttons.
+        Only one can be enabled at a time.
+        """
         log.info("Pause live updates: %s" % action)
         dgui = self.DarkGraphs.ui
         if action == False:
             dgui.actionPause_Live_Updates.setChecked(True)
-        # Only way to get out of pause mode is to click the live button
+
         self.DarkGraphs.ui.actionContinue_Live_Updates.setChecked(False)
         self.live_updates = False
 
@@ -248,9 +257,10 @@ class LineGrabApplication(object):
         """ Reset curve, image visualizations to the default. Trigger a
         auto scale replot manually in case pause mode is active.
         """
-        print "reset"
+        log.debug("reset graph")
         self.auto_scale = True
         self.DarkGraphs.select_tool.action.setChecked(True)
+
         dgplot = self.DarkGraphs.MainCurveDialog.get_plot()
         dgplot.do_autoscale()
 
@@ -258,31 +268,19 @@ class LineGrabApplication(object):
         dgimage.do_autoscale()
  
     def process_select(self, status):
-        print "Select tool clicked %s" % status
+        """ Provide a default tool for panning the graph and to get out
+        of zoom mode.
+        """
+        log.debug("Select tool clicked %s" % status)
 
     def process_zoom(self, status):
-        """ Zoom clicked
+        """ Zoom clicked, turn off auto scaling. The linkage with the
+        guiqwt control handles cursor updates and actual zoom
+        functionality.
         """
-        print "Zoom tool clicked %s" % status
+        log.debug("Zoom tool clicked %s" % status)
         if status == "True":
             self.auto_scale = False
-
-    def run(self):
-        log.debug("Create application")
-        self.app = QtGui.QApplication([])
-        log.debug("visualize darkgraphs")
-        self.DarkGraphs = visualize.DarkGraphs()
-        self.setup_signals()
-        self.reset_graph()
-
-        self.fps = utils.SimpleFPS()
-        self.setup_pipe_timer()
-
-        if self.args.testing:
-            self.delay_close()
-
-        self.DarkGraphs.show()
-        sys.exit(self.app.exec_())
 
     def delay_close(self):
         """ For testing purposes, create a qtimer that triggers the
@@ -293,13 +291,44 @@ class LineGrabApplication(object):
         self.closeTimer.timeout.connect(self.DarkGraphs.close)
         self.closeTimer.start(3000)
 
+    def set_app_defaults(self):
+        """ Call the various application control setup functions.
+        """
+        self.create_actions()
+        self.setup_signals()
+        self.reset_graph()
+
+        self.fps = utils.SimpleFPS()
+
+        # Click the live button
+        dg.ui.actionContinue_Live_Updates.trigger()
+
+    def run(self):
+        """ This is the application code that is called by the main
+        function. The architectural idea is to have as little code in
+        main as possible and create the qapplication here so the
+        nosetests can function.
+        """
+        self.app = QtGui.QApplication([])
+        self.DarkGraphs = visualize.DarkGraphs()
+
+        self.set_app_defaults()
+        self.setup_pipe_timer()
+
+        if self.args.testing:
+            self.delay_close()
+
+        self.DarkGraphs.show()
+        sys.exit(self.app.exec_())
+
+
 def main(argv=None):
     if argv is None: 
         from sys import argv as sys_argv 
         argv = sys_argv 
    
     argv = argv[1:] 
-    log.debug("Clip arguments to: %s" % argv)
+    log.debug("Arguments: %s" % argv)
 
     exit_code = 0
     try:
