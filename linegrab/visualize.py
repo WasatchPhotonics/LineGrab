@@ -12,6 +12,7 @@ from guiqwt import curve
 from guiqwt import builder
 from guiqwt import tools
 
+from linegrab import utils
 
 log = logging.getLogger(__name__)
 
@@ -19,12 +20,12 @@ class CleanImageDialog(plot.ImageDialog):
     """ An guiqwt imagedialog with the grid removed, base data
     visualized, colormap applied, and stylesheet applied.
     """
-    def __init__(self):
-        #options = {"lock_aspect_ratio": False}
-        options = {"lock_aspect_ratio": True}
 
-        super(CleanImageDialog, self).__init__(toolbar=False, edit=True,
-                                               options=options)
+    def __init__(self):
+        super(CleanImageDialog, self).__init__(toolbar=False, edit=True)
+
+        # If you delete the grid item this way, apparently you can't get
+        # it back even though the imagedialog makes it available
         grid_item = self.get_plot().get_items()[0]
         self.get_plot().del_item(grid_item)
        
@@ -37,7 +38,9 @@ class CleanImageDialog(plot.ImageDialog):
         # Note that this disagrees with the documentation 
         local_plot.set_axis_direction("left", False)
 
-        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+        # Load an apply this widget's style sheets. Make sure the
+        # application wide stylesheet is loaded first
+        self.chart_style = utils.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
 
 
@@ -54,25 +57,11 @@ class CleanImageDialog(plot.ImageDialog):
         new_data = numpy.array(base_data).astype(float)
 
         bmi = builder.make.image
-        self.image = bmi(new_data, colormap="bone")
+        self.image = bmi(new_data, colormap="gist_earth")
         local_plot = self.get_plot()
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
         
-        
-       
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
-
-
 
 class CleanCurveDialog(plot.CurveDialog):
     """ A curve dialog with no ok/cancel buttons and the grid item
@@ -84,7 +73,7 @@ class CleanCurveDialog(plot.CurveDialog):
         log.debug("new graph")
 
         # Don't show the grid by deleting it. Apparently you can't get
-        # it back by deleting it
+        # it back after deleting it
         grid_item = self.get_plot().get_items()[0]
         self.get_plot().del_item(grid_item)
 
@@ -93,12 +82,12 @@ class CleanCurveDialog(plot.CurveDialog):
         self.chart_param.label = "Data"
         self.chart_param.line.color = "#00cc00"
 
-        # Load an apply this widget's style sheets. Make sure the
-        # application wide stylesheet is loaded first
-
         # Create a default line profile
         self.create_curve()
-        self.chart_style = self.load_style_sheet("linegrab_custom.css")
+
+        # Load an apply this widget's style sheets. Make sure the
+        # application wide stylesheet is loaded first
+        self.chart_style = utils.load_style_sheet("linegrab_custom.css")
         self.setStyleSheet(self.chart_style)
 
 
@@ -118,19 +107,8 @@ class CleanCurveDialog(plot.CurveDialog):
         """ Do not show the ok, cancel buttons, yet retain the right
         click editing capabilities.
         """
-        #print "No button layout"
         pass
        
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
 
 class SelectSignalTool(tools.SelectTool):
     """ Add signals to the toolklass object for application wide usage
@@ -215,11 +193,6 @@ class DarkGraphs(QtGui.QMainWindow):
     def __init__(self):
         super(DarkGraphs, self).__init__()
 
-        self.qss_string = self.load_style_sheet("qdarkstyle.css")
-        self.image_height = 50
-        self.image_data = []
-        self.auto_scale = True
-
         from linegrab.ui.linegrab_layout import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -227,11 +200,13 @@ class DarkGraphs(QtGui.QMainWindow):
 
         # Make sure the system wide style sheet is applied before the
         # curve and image widgets style sheets overwrite
+        self.qss_string = utils.load_style_sheet("qdarkstyle.css")
         self.setStyleSheet(self.qss_string)
+
         self.replace_widgets()
 
-        # Align the image with the curve above
-        self.MainImageDialog.setContentsMargins(10, 0, 0, 0)
+        # Align the image with the curve above it
+        self.MainImageDialog.setContentsMargins(17, 0, 0, 0)
 
         self.add_manager_and_tools()
 
@@ -244,63 +219,56 @@ class DarkGraphs(QtGui.QMainWindow):
         # Create a new plot manager, add plots to the plot manager.
         # There is already a plot manager associated with the
         # curvedialog, just create a new one for simplicity.
-        self.curve_plot_manager = plot.PlotManager(self)
-        main_curve_plot = self.MainCurveDialog.get_plot()
-        self.curve_plot_manager.add_plot(main_curve_plot)
+        manager = plot.PlotManager(self)
+        manager.add_plot(self.MainCurveDialog.get_plot())
 
-        # Add a panels to the plot manager
-        self.item_list = plot.PlotItemList(self)
-        self.curve_plot_manager.add_panel(self.item_list)
+        # Add a panel to the plot manager
+        manager.add_panel(plot.PlotItemList(self))
 
         # Associate the toolbar with the plot manager, this is created
         # along with the qmainwindow toolbars
         curve_toolbar = self.addToolBar("Curve tools")
         curve_toolbar.setIconSize(QtCore.QSize(36, 36))
-        self.curve_plot_manager.add_toolbar(curve_toolbar,
-                                            id(curve_toolbar))
+        manager.add_toolbar(curve_toolbar, id(curve_toolbar))
 
         # If you do this, you get all of the other tools
-        #self.curve_plot_manager.register_all_curve_tools()
-        cpm = self.curve_plot_manager
-        self.select_tool = cpm.add_tool(SelectSignalTool)
-        self.zoom_tool = cpm.add_tool(ZoomSignalTool)
+        #manager.register_all_curve_tools()
+
+        # Add the custom tool classes with wrapper signals
+        self.select_tool = manager.add_tool(SelectSignalTool)
+        self.zoom_tool = manager.add_tool(ZoomSignalTool)
 
         # Store a reference for use by the application
         self.curve_toolbar = curve_toolbar
-
-    def load_style_sheet(self, filename):
-        """ Load the qss stylesheet into a string suitable for passing
-        to the main widget.
-        """
-        qss_file = open("linegrab/ui/%s" % filename)
-        temp_string = ""
-        for line in qss_file.readlines():
-            temp_string += line
-           
-        return temp_string
 
     def replace_widgets(self):
         # From: http://stackoverflow.com/questions/4625102/\
         # how-to-replace-a-widget-with-another-using-qt
 
+        # Create the widget
         self.MainCurveDialog = CleanCurveDialog()
- 
+        
+        # Remove the placeholder widget from the layout 
         lcph = self.ui.labelCurvePlaceholder
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
         lcph.close()
 
+        # Add the new widget to the layout
         vlc.insertWidget(0, self.MainCurveDialog)
         vlc.update()
-        
 
+
+        # Create the widget
         self.MainImageDialog = CleanImageDialog()
 
+        # Remove the placeholder widget from the layout 
         liph = self.ui.labelImagePlaceholder
         vli = self.ui.verticalLayoutImage
         vli.removeWidget(liph)
         liph.close()
-       
+      
+        # Add the new widget to the layout 
         vli.insertWidget(0, self.MainImageDialog)
         vli.update()
 

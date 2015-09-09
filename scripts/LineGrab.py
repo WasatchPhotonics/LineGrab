@@ -39,7 +39,7 @@ class LineGrabApplication(object):
         """
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.update_visuals)
-        self.dataTimer.start(100)
+        self.dataTimer.start(0)
 
     def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
@@ -50,41 +50,53 @@ class LineGrabApplication(object):
         if not result:
             log.warn("Problem reading from pipe")
         
-        self.update_graph(data)
-        self.curve_render += 1
+        if self.live_updates == True:
+            self.update_graph(data)
+            self.curve_render += 1
+            self.update_image(data)
+            self.check_image(self.curve_render)
 
         if self.args.testing:
             log.debug("render curve %s Start:%s End:%s" \
                       % (self.curve_render, data[0], data[-1]))
 
-        self.update_image(data)
+        self.update_fps()
+        self.dataTimer.start(0)
+
+    def check_image(self, render_count):
+        """ Provide post-data population and form showing alignment and
+        rendering of the image area.
+        """
+        if render_count != 1:
+            return
 
         # If it's the first render, autoscale to make sure it lines up
-        # properly. See update_graph for why this is necessary
-        if self.curve_render == 1:
-            local_plot = self.DarkGraphs.MainImageDialog.get_plot()
-            local_plot.do_autoscale()
+        # properly. See update_image for why this is necessary
+        local_plot = self.DarkGraphs.MainImageDialog.get_plot()
+        local_plot.do_autoscale()
 
-            # divided by the width of the image 1.0 / 0.4 is a guessed
-            # value that seems to provide appropriate balance between
-            # startup looks and non-breaking functionality when the
-            # image is clicked.
-            ratio = 1.0 / 0.4
-            local_plot.set_aspect_ratio(ratio, lock=False)
-            
-            # Change the plot axis to have 0 in the lower left corner
-            local_plot.set_axis_limits(0, -5, 50)
+        # divided by the width of the image 1.0 / 0.4 is a guessed
+        # value that seems to provide appropriate balance between
+        # startup looks and non-breaking functionality when the
+        # image is clicked.
+        ratio = 1.0 / 0.4
+        local_plot.set_aspect_ratio(ratio, lock=False)
+        
+        # Change the plot axis to have 0 in the lower left corner
+        local_plot.set_axis_limits(0, -5, 50)
 
+    def update_fps(self):
+        """ Add tick, display the current rate.
+        """
         self.fps.tick()
         fps_text = "Update: %s FPS" % self.fps.rate()
         self.actionFPSDisplay.setText(fps_text)
-        self.dataTimer.start(0)
 
     def update_graph(self, data_list):
         """ Get the current line plot from the available line graph, 
         change it's data and replot.
         """
-        log.debug("render graph")
+        #log.debug("render graph")
         x_axis = range(len(data_list))
 
         mcd = self.DarkGraphs.MainCurveDialog
@@ -137,7 +149,8 @@ class LineGrabApplication(object):
 
 
     def parse_args(self, argv):
-        """ Handle any bad arguments, then set defaults
+        """ Handle any bad arguments, then set defaults. Creates
+        connection to pipe data source.
         """
         self.args = self.parser.parse_args(argv)
 
@@ -165,22 +178,22 @@ class LineGrabApplication(object):
     
         return parser
 
-    def setup_signals(self):
-        """ Hook into darkgraphs emitted signals for controller level.
+    def create_actions(self):
+        """ Runtime generated toolbars to link guiqwt graph controls
+        with the mainwindow level toolbars.
         """
         dg = self.DarkGraphs
-        
-        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
-        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
+        dgct = self.DarkGraphs.curve_toolbar.addAction
 
-        
-        act_name = "Reset graph parameters"
-        self.actionGraphReset = QtGui.QAction(act_name, self.app)
-        icon4 = QtGui.QIcon(":/greys/greys/reset.svg")
+        agfe = dgct(QtGui.QIcon(":/greys/greys/full_extent.svg"),
+                    "Full extent graph"
+                   )
+        self.actionGraphFullExtent = agfe
 
-        self.actionGraphReset.setIcon(icon4)
-        dg.curve_toolbar.addAction(self.actionGraphReset)
-        self.actionGraphReset.triggered.connect(self.reset_graph)
+        agr = dgct(QtGui.QIcon(":/greys/greys/reset.svg"),
+                   "Reset graph parameters"
+                  )
+        self.actionGraphReset = agr
 
         spacer = QtGui.QWidget()
         spacer.setSizePolicy(QtGui.QSizePolicy.Expanding,
@@ -191,39 +204,88 @@ class LineGrabApplication(object):
         self.actionFPSDisplay = QtGui.QAction(act_name, self.app)
         dg.curve_toolbar.addAction(self.actionFPSDisplay)
 
-    def reset_graph(self):
-        """ Reset curve, image visualizations to the default.
+        # Remove the placeholder toolbar
+        dg.ui.toolBar_GraphControls.setVisible(False)
+
+    def setup_signals(self):
+        """ Hook into darkgraphs emitted signals for controller level.
         """
-        print "reset"
+        dg = self.DarkGraphs
+
+        # Hook the play/pause buttons
+        dg.ui.actionContinue_Live_Updates.triggered.connect(self.on_live)
+        dg.ui.actionPause_Live_Updates.triggered.connect(self.on_pause)
+       
+        # Custom graph buttons 
+        self.actionGraphReset.triggered.connect(self.reset_graph)
+        self.actionGraphFullExtent.triggered.connect(self.full_extent)
+
+        # Custom tools generated in visualize that are not actions
+        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
+        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
+
+    def on_live(self, action):
+        """ Live and pause buttons are the equivalent of toggle buttons.
+        Only one can be enabled at a time.
+        """
+        log.info("Click live updates")
+        dgui = self.DarkGraphs.ui
+        if action == False:
+            dgui.actionContinue_Live_Updates.setChecked(True)
+
+        self.DarkGraphs.ui.actionPause_Live_Updates.setChecked(False)
+        self.live_updates = True
+
+    def on_pause(self, action):
+        """ Pause and live buttons are the equivalent of toggle buttons.
+        Only one can be enabled at a time.
+        """
+        log.info("Pause live updates: %s" % action)
+        dgui = self.DarkGraphs.ui
+        if action == False:
+            dgui.actionPause_Live_Updates.setChecked(True)
+
+        self.DarkGraphs.ui.actionContinue_Live_Updates.setChecked(False)
+        self.live_updates = False
+
+    def full_extent(self):
+        """ Set the x axis to the full data range (12-bit), and set auto
+        scale off.
+        """
+        log.debug("Set full extent")
+        self.auto_scale = False
+        local_plot = self.DarkGraphs.MainCurveDialog.get_plot()
+        local_plot.set_axis_limits(0, 0, 4096)
+        local_plot.replot()
+
+    def reset_graph(self):
+        """ Reset curve, image visualizations to the default. Trigger a
+        auto scale replot manually in case pause mode is active.
+        """
+        log.debug("reset graph")
         self.auto_scale = True
         self.DarkGraphs.select_tool.action.setChecked(True)
-        
+
+        dgplot = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgplot.do_autoscale()
+
+        dgimage = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgimage.do_autoscale()
  
     def process_select(self, status):
-        print "Select tool clicked %s" % status
+        """ Provide a default tool for panning the graph and to get out
+        of zoom mode.
+        """
+        log.debug("Select tool clicked %s" % status)
 
     def process_zoom(self, status):
-        """ Zoom clicked
+        """ Zoom clicked, turn off auto scaling. The linkage with the
+        guiqwt control handles cursor updates and actual zoom
+        functionality.
         """
-        print "Zoom tool clicked %s" % status
+        log.debug("Zoom tool clicked %s" % status)
         if status == "True":
             self.auto_scale = False
-
-    def run(self):
-        log.debug("Create application")
-        self.app = QtGui.QApplication([])
-        self.DarkGraphs = visualize.DarkGraphs()
-        self.setup_signals()
-        self.reset_graph()
-
-        self.fps = utils.SimpleFPS()
-        self.setup_pipe_timer()
-
-        if self.args.testing:
-            self.delay_close()
-
-        self.DarkGraphs.show()
-        sys.exit(self.app.exec_())
 
     def delay_close(self):
         """ For testing purposes, create a qtimer that triggers the
@@ -234,17 +296,47 @@ class LineGrabApplication(object):
         self.closeTimer.timeout.connect(self.DarkGraphs.close)
         self.closeTimer.start(3000)
 
+    def set_app_defaults(self):
+        """ Call the various application control setup functions.
+        """
+        self.create_actions()
+        self.setup_signals()
+        self.reset_graph()
+
+        self.fps = utils.SimpleFPS()
+
+        # Click the live button
+        self.DarkGraphs.ui.actionContinue_Live_Updates.trigger()
+
+    def run(self):
+        """ This is the application code that is called by the main
+        function. The architectural idea is to have as little code in
+        main as possible and create the qapplication here so the
+        nosetests can function.
+        """
+        self.app = QtGui.QApplication([])
+        self.DarkGraphs = visualize.DarkGraphs()
+
+        self.set_app_defaults()
+        self.setup_pipe_timer()
+
+        if self.args.testing:
+            self.delay_close()
+
+        self.DarkGraphs.show()
+        sys.exit(self.app.exec_())
+
+
 def main(argv=None):
     if argv is None: 
         from sys import argv as sys_argv 
         argv = sys_argv 
    
     argv = argv[1:] 
-    log.debug("Clip arguments to: %s" % argv)
+    log.debug("Arguments: %s" % argv)
 
     exit_code = 0
     try:
-        
         lngapp = LineGrabApplication()
         lngapp.parse_args(argv)
         lngapp.run()
