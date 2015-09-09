@@ -12,6 +12,7 @@ from PyQt4 import QtGui, QtCore
 
 from linegrab import visualize
 from linegrab import devices
+from linegrab import utils
 
 logging.basicConfig(filename="LineGrab_log.txt", filemode="w",
                     level=logging.DEBUG)
@@ -29,6 +30,7 @@ class LineGrabApplication(object):
         self.image_render = 0
         self.image_height = 50
         self.image_data = []
+        self.auto_scale = True
 
     def setup_pipe_timer(self):
         """ This is a non-threaded application that uses qtimers with
@@ -37,7 +39,7 @@ class LineGrabApplication(object):
         """
         self.dataTimer = QtCore.QTimer()
         self.dataTimer.timeout.connect(self.update_visuals)
-        self.dataTimer.start(500)
+        self.dataTimer.start(100)
 
     def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
@@ -60,8 +62,22 @@ class LineGrabApplication(object):
         # If it's the first render, autoscale to make sure it lines up
         # properly. See update_graph for why this is necessary
         if self.curve_render == 1:
-            self.DarkGraphs.MainImageDialog.get_plot().do_autoscale()
+            local_plot = self.DarkGraphs.MainImageDialog.get_plot()
+            local_plot.do_autoscale()
 
+            # divided by the width of the image 1.0 / 0.4 is a guessed
+            # value that seems to provide appropriate balance between
+            # startup looks and non-breaking functionality when the
+            # image is clicked.
+            ratio = 1.0 / 0.4
+            local_plot.set_aspect_ratio(ratio, lock=False)
+            
+            # Change the plot axis to have 0 in the lower left corner
+            local_plot.set_axis_limits(0, -5, 50)
+
+        self.fps.tick()
+        fps_text = "Update: %s FPS" % self.fps.rate()
+        self.actionFPSDisplay.setText(fps_text)
         self.dataTimer.start(0)
 
     def update_graph(self, data_list):
@@ -71,10 +87,13 @@ class LineGrabApplication(object):
         log.debug("render graph")
         x_axis = range(len(data_list))
 
-        mcw = self.DarkGraphs.MainCurveWidget
-        mcw.curve.set_data(x_axis, data_list)
-            
-        mcw.get_plot().do_autoscale()
+        mcd = self.DarkGraphs.MainCurveDialog
+        mcd.curve.set_data(x_axis, data_list)
+          
+        if self.auto_scale:  
+            mcd.get_plot().do_autoscale()
+        else:
+            mcd.get_plot().replot()
       
     def update_image(self, data):
         """ Add the line of data to the image data, if it is greater
@@ -146,10 +165,58 @@ class LineGrabApplication(object):
     
         return parser
 
+    def setup_signals(self):
+        """ Hook into darkgraphs emitted signals for controller level.
+        """
+        dg = self.DarkGraphs
+        
+        dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
+        dg.select_tool.wrap_sig.clicked.connect(self.process_select)
+
+        
+        act_name = "Reset graph parameters"
+        self.actionGraphReset = QtGui.QAction(act_name, self.app)
+        icon4 = QtGui.QIcon(":/greys/greys/reset.svg")
+
+        self.actionGraphReset.setIcon(icon4)
+        dg.curve_toolbar.addAction(self.actionGraphReset)
+        self.actionGraphReset.triggered.connect(self.reset_graph)
+
+        spacer = QtGui.QWidget()
+        spacer.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                             QtGui.QSizePolicy.Expanding)
+        dg.curve_toolbar.addWidget(spacer)
+
+        act_name = "Instantaneous performance"
+        self.actionFPSDisplay = QtGui.QAction(act_name, self.app)
+        dg.curve_toolbar.addAction(self.actionFPSDisplay)
+
+    def reset_graph(self):
+        """ Reset curve, image visualizations to the default.
+        """
+        print "reset"
+        self.auto_scale = True
+        self.DarkGraphs.select_tool.action.setChecked(True)
+        
+ 
+    def process_select(self, status):
+        print "Select tool clicked %s" % status
+
+    def process_zoom(self, status):
+        """ Zoom clicked
+        """
+        print "Zoom tool clicked %s" % status
+        if status == "True":
+            self.auto_scale = False
+
     def run(self):
         log.debug("Create application")
         self.app = QtGui.QApplication([])
         self.DarkGraphs = visualize.DarkGraphs()
+        self.setup_signals()
+        self.reset_graph()
+
+        self.fps = utils.SimpleFPS()
         self.setup_pipe_timer()
 
         if self.args.testing:
