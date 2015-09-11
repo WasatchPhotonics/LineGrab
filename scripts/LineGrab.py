@@ -72,7 +72,7 @@ class LineGrabApplication(object):
 
         # If it's the first render, autoscale to make sure it lines up
         # properly. See update_image for why this is necessary
-        local_plot = self.DarkGraphs.MainImageDialog.get_plot()
+        local_plot = self.DarkGraphs.main_image_dialog.get_plot()
         local_plot.do_autoscale()
 
         # divided by the width of the image 1.0 / 0.4 is a guessed
@@ -99,7 +99,7 @@ class LineGrabApplication(object):
         #log.debug("render graph")
         x_axis = range(len(data_list))
 
-        mcd = self.DarkGraphs.MainCurveDialog
+        mcd = self.DarkGraphs.main_curve_dialog
         mcd.curve.set_data(x_axis, data_list)
           
         if self.auto_scale:  
@@ -124,7 +124,7 @@ class LineGrabApplication(object):
 
         new_data = numpy.array(img_data).astype(float)
 
-        mid = self.DarkGraphs.MainImageDialog
+        mid = self.DarkGraphs.main_image_dialog
         mid.image.set_data(new_data)
 
         # If you do autoscale here, it tends to jump around in appearing
@@ -254,7 +254,7 @@ class LineGrabApplication(object):
         """
         log.debug("Set full extent")
         self.auto_scale = False
-        local_plot = self.DarkGraphs.MainCurveDialog.get_plot()
+        local_plot = self.DarkGraphs.main_curve_dialog.get_plot()
         local_plot.set_axis_limits(0, 0, 4096)
         local_plot.replot()
 
@@ -266,10 +266,10 @@ class LineGrabApplication(object):
         self.auto_scale = True
         self.DarkGraphs.select_tool.action.setChecked(True)
 
-        dgplot = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgplot = self.DarkGraphs.main_curve_dialog.get_plot()
         dgplot.do_autoscale()
 
-        dgimage = self.DarkGraphs.MainCurveDialog.get_plot()
+        dgimage = self.DarkGraphs.main_curve_dialog.get_plot()
         dgimage.do_autoscale()
  
     def process_select(self, status):
