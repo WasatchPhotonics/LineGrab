@@ -21,13 +21,13 @@ class Test(unittest.TestCase):
     def test_line_and_image(self):
         # Verify that the line graph and image graph are available and
         # have useful dimensions
-        curve_x = self.form.MainCurveDialog.width()
-        curve_y = self.form.MainCurveDialog.height()
+        curve_x = self.form.main_curve_dialog.width()
+        curve_y = self.form.main_curve_dialog.height()
         self.assertEqual(curve_x, 1080) 
-        self.assertEqual(curve_y, 395)
+        self.assertEqual(curve_y, 397)
 
-        image_x = self.form.MainImageDialog.width()
-        image_y = self.form.MainImageDialog.height()
+        image_x = self.form.main_image_dialog.width()
+        image_y = self.form.main_image_dialog.height()
         self.assertEqual(image_x, 1080)
         self.assertEqual(image_y, 240)
 
