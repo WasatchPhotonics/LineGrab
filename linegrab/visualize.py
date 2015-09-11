@@ -11,6 +11,7 @@ from guiqwt import styles
 from guiqwt import curve
 from guiqwt import builder
 from guiqwt import tools
+from guiqwt import histogram
 
 from linegrab import utils
 
@@ -61,6 +62,12 @@ class CleanImageDialog(plot.ImageDialog):
         local_plot = self.get_plot()
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
+
+    def install_button_layout(self):
+        """ Do not show the ok, cancel buttons, yet retain the right
+        click editing capabilities.
+        """
+        pass
 
 class CleanCurveDialog(plot.CurveDialog):
     """ A curve dialog with no ok/cancel buttons and the grid item

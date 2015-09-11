@@ -83,7 +83,7 @@ class LineGrabApplication(object):
         local_plot.set_aspect_ratio(ratio, lock=False)
         
         # Change the plot axis to have 0 in the lower left corner
-        local_plot.set_axis_limits(0, -5, 50)
+        local_plot.set_axis_limits(0, -20, 50)
 
     def update_fps(self):
         """ Add tick, display the current rate.
