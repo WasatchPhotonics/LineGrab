@@ -28,14 +28,14 @@ class CleanImageDialog(plot.ImageDialog):
         # it back even though the imagedialog makes it available
         grid_item = self.get_plot().get_items()[0]
         self.get_plot().del_item(grid_item)
-       
+
         self.create_image()
 
         # Don't show the right side colormap axis
         local_plot = self.get_plot()
         local_plot.enableAxis(local_plot.colormap_axis, False)
-      
-        # Note that this disagrees with the documentation 
+
+        # Note that this disagrees with the documentation
         local_plot.set_axis_direction("left", False)
 
         # Load an apply this widget's style sheets. Make sure the
@@ -46,11 +46,11 @@ class CleanImageDialog(plot.ImageDialog):
 
     def create_image(self):
         """ Create a 2D test pattern image, apply it to the view area.
-        """ 
+        """
         base_data = range(50)
 
         position = 0
-        for item in base_data:
+        while position < len(base_data):
             base_data[position] = numpy.linspace(0, 100, 1024)
             position += 1
 
@@ -61,7 +61,6 @@ class CleanImageDialog(plot.ImageDialog):
         local_plot = self.get_plot()
         local_plot.add_item(self.image)
         local_plot.do_autoscale()
-        
 
 class CleanCurveDialog(plot.CurveDialog):
     """ A curve dialog with no ok/cancel buttons and the grid item
@@ -99,8 +98,8 @@ class CleanCurveDialog(plot.CurveDialog):
         self.curve = curve.CurveItem(self.chart_param)
         self.curve.set_data(x_axis, data_list)
 
-        plot = self.get_plot()
-        plot.add_item(self.curve)
+        local_plot = self.get_plot()
+        local_plot.add_item(self.curve)
         return True
 
     def install_button_layout(self):
@@ -108,7 +107,14 @@ class CleanCurveDialog(plot.CurveDialog):
         click editing capabilities.
         """
         pass
-       
+
+
+class SignalObject(QtCore.QObject):
+    """ Simple wrapper of a qobject to be used in custom signal tools
+    for emitting a string describing state.
+    """
+    clicked = QtCore.pyqtSignal(QtCore.QString)
+
 
 class SelectSignalTool(tools.SelectTool):
     """ Add signals to the toolklass object for application wide usage
@@ -118,10 +124,8 @@ class SelectSignalTool(tools.SelectTool):
     def __init__(self, *args, **kwargs):
         super(SelectSignalTool, self).__init__(*args, **kwargs)
 
-        class signalObject(QtCore.QObject):
-            clicked = QtCore.pyqtSignal(QtCore.QString)
-        self.wrap_sig = signalObject()
- 
+        self.wrap_sig = SignalObject()
+
     def create_action(self, manager):
         """This is overriden here to add custom icons without calling
         guidata.get_icon
@@ -129,16 +133,16 @@ class SelectSignalTool(tools.SelectTool):
         my_icon = QtGui.QIcon(":/greys/greys/select.svg")
 
         self.action = manager.create_action(self.TITLE,
-                                       icon=my_icon,
-                                       tip=self.TIP,
-                                       triggered=self.activate)
+                                            icon=my_icon,
+                                            tip=self.TIP,
+                                            triggered=self.activate)
         self.action.setCheckable(True)
         group = self.manager.get_tool_group("interactive")
         group.addAction(self.action)
         self.action.toggled.connect(self.tool_clicked)
         return self.action
 
-    def tool_clicked(self, action):
+    def tool_clicked(self):
         """ Convenience signal wrapper to emit the boolean of the action
         checked status.
         """
@@ -153,11 +157,8 @@ class ZoomSignalTool(tools.RectZoomTool):
 
     def __init__(self, *args, **kwargs):
         super(ZoomSignalTool, self).__init__(*args, **kwargs)
+        self.wrap_sig = SignalObject()
 
-        class signalObject(QtCore.QObject):
-            clicked = QtCore.pyqtSignal(QtCore.QString)
-        self.wrap_sig = signalObject()
- 
     def create_action(self, manager):
         """This is overriden here to add custom icons without calling
         guidata.get_icon
@@ -175,7 +176,7 @@ class ZoomSignalTool(tools.RectZoomTool):
         self.action.triggered.connect(self.tool_clicked)
         return self.action
 
-    def tool_clicked(self, action):
+    def tool_clicked(self):
         """ Convenience signal wrapper to emit the boolean of the action
         checked status.
         """
@@ -206,7 +207,7 @@ class DarkGraphs(QtGui.QMainWindow):
         self.replace_widgets()
 
         # Align the image with the curve above it
-        self.MainImageDialog.setContentsMargins(17, 0, 0, 0)
+        self.main_image_dialog.setContentsMargins(17, 0, 0, 0)
 
         self.add_manager_and_tools()
 
@@ -220,7 +221,7 @@ class DarkGraphs(QtGui.QMainWindow):
         # There is already a plot manager associated with the
         # curvedialog, just create a new one for simplicity.
         manager = plot.PlotManager(self)
-        manager.add_plot(self.MainCurveDialog.get_plot())
+        manager.add_plot(self.main_curve_dialog.get_plot())
 
         # Add a panel to the plot manager
         manager.add_panel(plot.PlotItemList(self))
@@ -242,34 +243,37 @@ class DarkGraphs(QtGui.QMainWindow):
         self.curve_toolbar = curve_toolbar
 
     def replace_widgets(self):
-        # From: http://stackoverflow.com/questions/4625102/\
-        # how-to-replace-a-widget-with-another-using-qt
+        """ From: http://stackoverflow.com/questions/4625102/\
+            how-to-replace-a-widget-with-another-using-qt
+        Replace the current placeholders from qt designer with the
+        custom widgets.
+        """
 
         # Create the widget
-        self.MainCurveDialog = CleanCurveDialog()
-        
-        # Remove the placeholder widget from the layout 
+        self.main_curve_dialog = CleanCurveDialog() 
+
+        # Remove the placeholder widget from the layout
         lcph = self.ui.labelCurvePlaceholder
         vlc = self.ui.verticalLayoutCurve
         vlc.removeWidget(lcph)
         lcph.close()
 
         # Add the new widget to the layout
-        vlc.insertWidget(0, self.MainCurveDialog)
+        vlc.insertWidget(0, self.main_curve_dialog)
         vlc.update()
 
 
         # Create the widget
-        self.MainImageDialog = CleanImageDialog()
+        self.main_image_dialog = CleanImageDialog()
 
-        # Remove the placeholder widget from the layout 
+        # Remove the placeholder widget from the layout
         liph = self.ui.labelImagePlaceholder
         vli = self.ui.verticalLayoutImage
         vli.removeWidget(liph)
         liph.close()
-      
-        # Add the new widget to the layout 
-        vli.insertWidget(0, self.MainImageDialog)
+
+        # Add the new widget to the layout
+        vli.insertWidget(0, self.main_image_dialog)
         vli.update()
 
 
