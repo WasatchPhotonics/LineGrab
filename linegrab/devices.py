@@ -4,9 +4,38 @@ communication with camera control devices.
 
 import numpy
 import logging
+        
+from subprocess import Popen, PIPE
 
 log = logging.getLogger(__name__)
 
+class DalsaCobraDevice(object):
+    """ Use a Dalsa frame grabber and the stdin/stdout customized 
+    example from Sapera.
+    """
+    def __init__(self):
+        super(DalsaCobraDevice, self).__init__()
+        log.debug("Startup")
+
+
+    def setup_pipe(self):
+        log.info("Setup pipe device")
+        prefix = "tools\GrabConsole\CSharp\\bin\Debug\\"
+
+        cmd = 'tools\GrabConsole\CSharp\\bin\Debug\SapNETCSharpGrabConsole.exe'
+        ccf = 'tools\GrabConsole\CSharp\\bin\Debug\prcinternal.ccf'
+        try:
+            self.pipe = Popen([cmd, 
+                        'grab','Xcelera-CL_LX1_1','0',
+                        ccf], stdin=PIPE, stdout=PIPE)         
+            #self.pipe = Popen([cmd, 
+                        #'grab','Xcelera-CL_PX4_1','0',
+                        #ccf], stdin=PIPE, stdout=PIPE)         
+        except:
+            self.log.critical("Failure to setup pipe: " + str(sys.exc_info()))
+            sys.exit(1)
+        return 1
+        return True
 
 class SimulatedPipeDevice(object):
     """ Use the pipe device interface, return a cycling test pattern of
