@@ -217,17 +217,6 @@ class LineGrabApplication(object):
         # function correctly.
         #dg.wrap_sig.clicked.connect(self.cleanupClose)
 
-    def cleanup_close(self):
-        """ Cleanup the application on widget close
-        close the pipes, stop all the timers.
-        """
-        log.debug("Cleanup close")
-        log.info("Attempt to close pipe")
-        result = self.dev.close_pipe()
-        log.info("Close pipe result: %s" % result)
-        self.dataTimer.stop()
-        self.app.quit()
-
     def on_live(self, action):
         """ Live and pause buttons are the equivalent of toggle buttons.
         Only one can be enabled at a time.

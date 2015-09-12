@@ -56,7 +56,7 @@ class LineGrabApplication(object):
         the unittest generated controller.
         """
         if not self.args.testing:
-            self.app = QtGui.QApplication([])
+            app = QtGui.QApplication([])
 
         self.form = controller.CurveImage()
         self.form.set_parameters(self.args)
