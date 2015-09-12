@@ -21,6 +21,7 @@ class ArgsSimulation(object):
     """
     def __init__(self):
         self.testing = True 
+        self.source = "simulation"
 
 class Test(unittest.TestCase):
 

@@ -53,8 +53,6 @@ class Test(unittest.TestCase):
     def test_main_options(self):
         # Verify that main run with the testing option auto-closes the
         # application
-        # Run without testing mode initially for test build out
-
         result = LGController.main(["unittest", 
                                     "-s", "simulation", "-t"])
         self.assertEquals(0, result)
