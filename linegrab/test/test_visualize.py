@@ -45,7 +45,6 @@ class Test(unittest.TestCase):
         zt.wrap_sig.clicked.connect(self.process_zoom)
         zt.tool_clicked()
         self.assertEqual(self.zoom_result, "False")
-
     
     def process_zoom(self, event):
         print "zoom signal is: %s" % event

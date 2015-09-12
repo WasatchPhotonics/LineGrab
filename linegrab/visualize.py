@@ -219,7 +219,7 @@ class DarkGraphs(QtGui.QMainWindow):
         self.add_manager_and_tools()
 
         self.show()
-
+        
     def add_manager_and_tools(self):
         """ Create the required plot manager to give access to the item
         list, graph tools, etc.

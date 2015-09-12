@@ -136,13 +136,6 @@ class LineGrabApplication(object):
                         )
                      )
  
-    def closeEvent(self):
-        """ close the pipes, stop all the timers.
-        """
-        log.info("Attempt to close pipe")
-        result = self.dev.close_pipe()
-        log.info("Close pipe result: %s" % result)
-        self.dataTimer.stop()
 
 
     def parse_args(self, argv):
@@ -221,6 +214,22 @@ class LineGrabApplication(object):
         dg.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
         dg.select_tool.wrap_sig.clicked.connect(self.process_select)
 
+        # Connect to the lower level widget close event, clean up all
+        # application level code here. This is to help the test harness
+        # function correctly.
+        #dg.wrap_sig.clicked.connect(self.cleanupClose)
+
+    def cleanup_close(self):
+        """ Cleanup the application on widget close
+        close the pipes, stop all the timers.
+        """
+        log.debug("Cleanup close")
+        log.info("Attempt to close pipe")
+        result = self.dev.close_pipe()
+        log.info("Close pipe result: %s" % result)
+        self.dataTimer.stop()
+        self.app.quit()
+
     def on_live(self, action):
         """ Live and pause buttons are the equivalent of toggle buttons.
         Only one can be enabled at a time.
@@ -290,8 +299,11 @@ class LineGrabApplication(object):
         """
         log.debug("Trigger delay close")
         self.closeTimer = QtCore.QTimer()
-        self.closeTimer.timeout.connect(self.DarkGraphs.close)
-        self.closeTimer.start(3000)
+        self.closeTimer.timeout.connect(self.cleanup_close)
+        self.closeTimer.start(1000)
+
+        self.process_zoom("True")
+
 
     def set_app_defaults(self):
         """ Call the various application control setup functions.
