@@ -46,9 +46,6 @@ class LineGrabApplication(object):
         """
 
         result, data = self.dev.grab_pipe()
-
-        if not result:
-            log.warn("Problem reading from pipe")
         
         if self.live_updates == True:
             self.update_graph(data)
