@@ -48,16 +48,21 @@ class Test(unittest.TestCase):
         # Wait, click the zoom icon
         QtTest.QTest.qWait(100)
 
-        # 200, 28 of the main form window, because inheriting from the
-        # rectzoomtool apparently disguises the widgetness from the
-        # qttest mouseclick. Can you fix this with a proxy widget?
-        zoom_pos = QtCore.QPoint(200, 28)
-        #QtTest.QTest.mouseClick(self.form, QtCore.Qt.LeftButton, pos=zoom_pos, delay=1)
+        # You'd think you could do: 
+        # mouseClick(self.form.zoom_tool, QtCore.QtLeftButton)
+        # but that responds with argument in unexpected type
+        # ZoomSignalTool. 
+        # You'd also think you can specify global application
+        # coordinates and click. But that does nothing. No feedback,
+        # nothing.
+        # http://stackoverflow.com/questions/20394236/\
+        #   qtest-mouseclick-on-a-qpushbutton
+        # shows that you should use coordinates, look up the child, then
+        # the click works.
 
-        # Try find child at - won't that just return the same
-        # rectzoomtool which does not respond to the click interface?
+        # 200, 28 of the main form window location of the zoom tool
+        zoom_pos = QtCore.QPoint(200, 28)
         child = self.form.childAt(zoom_pos)
-        print "The child is: %s" % child
         QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton, delay=1)
 
         # Make sure auto scale is off
