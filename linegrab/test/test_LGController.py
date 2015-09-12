@@ -14,7 +14,6 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.log_filename = "LineGrab_log.txt"
-        pass
 
     def tearDown(self):
         print "DO you need close all windows?"

@@ -58,13 +58,19 @@ class LineGrabApplication(object):
         if not self.args.testing:
             self.app = QtGui.QApplication([])
 
-        self.form = controller.CurveImage(self.args)
+        self.form = controller.CurveImage()
+        self.form.set_parameters(self.args)
 
         if not self.args.testing:
             sys.exit(app.exec_())
 
 
 def main(argv=None):
+    """ main calls the wrapper code around the application objects with
+    as little framework as possible. See:
+    https://groups.google.com/d/msg/comp.lang.python/j_tFS3uUFBY/\
+        ciA7xQMe6TMJ
+    """
     if argv is None: 
         from sys import argv as sys_argv 
         argv = sys_argv 
