@@ -342,4 +342,9 @@ class CurveImage(QtGui.QMainWindow):
         super(CurveImage, self).__init__()
         log.debug("CurveImage creation")
 
-        self.DarkGraphs = visualize.DarkGraphs()
+        self.dark_graphs = visualize.DarkGraphs()
+
+    def set_parameters(self, args):
+        """ Assign the startup environment parameters for this
+        application run. Data source simulation/e2v, etc.
+        """

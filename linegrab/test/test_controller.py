@@ -20,6 +20,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.form = controller.CurveImage()
+        self.form.show()
 
     def tearDown(self):
         # This cleans up old windows from rapid tests
@@ -29,11 +30,12 @@ class Test(unittest.TestCase):
         # Display the form
 
         # Set the application parameters 
+        args = "testing"
+        self.form.set_parameters(args)
 
         # Wait 2 seconds, make sure application is closed
-        self.assertFalse(self.form.isVisible())
         QtTest.QTest.qWait(2000)
-        self.assertFalse(self.form.isVisible())
+        self.assertFalse(self.form.dark_graphs.isVisible())
 
 if __name__ == "__main__":
     unittest.main()
