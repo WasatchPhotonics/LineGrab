@@ -16,11 +16,16 @@ from linegrab import controller
 #    writing-unit-tests-for-qgis-python-plugins/
 app = QtGui.QApplication([])
 
+class ArgsSimulation(object):
+    """ Simulation of parser args in LGController.
+    """
+    def __init__(self):
+        self.testing = True 
+
 class Test(unittest.TestCase):
 
     def setUp(self):
         self.form = controller.CurveImage()
-        self.form.show()
 
     def tearDown(self):
         # This cleans up old windows from rapid tests
@@ -30,12 +35,12 @@ class Test(unittest.TestCase):
         # Display the form
 
         # Set the application parameters 
-        args = "testing"
+        args = ArgsSimulation()
         self.form.set_parameters(args)
 
         # Wait 2 seconds, make sure application is closed
         QtTest.QTest.qWait(2000)
-        self.assertFalse(self.form.dark_graphs.isVisible())
+        self.assertFalse(self.form.isVisible())
 
 if __name__ == "__main__":
     unittest.main()

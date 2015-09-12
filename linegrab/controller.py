@@ -342,9 +342,83 @@ class CurveImage(QtGui.QMainWindow):
         super(CurveImage, self).__init__()
         log.debug("CurveImage creation")
 
-        self.dark_graphs = visualize.DarkGraphs()
+        from linegrab.ui.linegrab_layout import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.setGeometry(450, 350, 1080, 600)
+
+        # Make sure the system wide style sheet is applied before the
+        # curve and image widgets style sheets overwrite
+        self.qss_string = utils.load_style_sheet("qdarkstyle.css")
+        self.setStyleSheet(self.qss_string)
+
+        self.replace_widgets()
+
+        # Align the image with the curve above it
+        #self.main_image_dialog.setContentsMargins(17, 0, 0, 0)
+
+        #self.add_manager_and_tools()
+
+        self.show()
+
+    def replace_widgets(self):
+        """ From: http://stackoverflow.com/questions/4625102/\
+            how-to-replace-a-widget-with-another-using-qt
+        Replace the current placeholders from qt designer with the
+        custom widgets.
+        """
+
+        # Create the widget
+        self.main_curve_dialog = visualize.CleanCurveDialog() 
+
+        # Remove the placeholder widget from the layout
+        lcph = self.ui.labelCurvePlaceholder
+        vlc = self.ui.verticalLayoutCurve
+        vlc.removeWidget(lcph)
+        lcph.close()
+
+        # Add the new widget to the layout
+        vlc.insertWidget(0, self.main_curve_dialog)
+        vlc.update()
+
+
+        # Create the widget
+        self.main_image_dialog = visualize.CleanImageDialog()
+
+        # Remove the placeholder widget from the layout
+        liph = self.ui.labelImagePlaceholder
+        vli = self.ui.verticalLayoutImage
+        vli.removeWidget(liph)
+        liph.close()
+
+        # Add the new widget to the layout
+        vli.insertWidget(0, self.main_image_dialog)
+        vli.update()
 
     def set_parameters(self, args):
         """ Assign the startup environment parameters for this
         application run. Data source simulation/e2v, etc.
         """
+        if args.testing:
+            self.delay_close()
+        
+
+    def delay_close(self):
+        """ For testing purposes, create a qtimer that triggers the
+        DarkGraphs's close event after a delay.
+        """
+        log.debug("Trigger delay close")
+        self.closeTimer = QtCore.QTimer()
+        self.closeTimer.timeout.connect(self.cleanup_close)
+        self.closeTimer.start(1000)
+
+    def cleanup_close(self):
+        """ Cleanup the application on widget close
+        close the pipes, stop all the timers.
+        """
+        log.debug("Cleanup close")
+        #log.info("Attempt to close pipe")
+        #result = self.dev.close_pipe()
+        #log.info("Close pipe result: %s" % result)
+        #self.dataTimer.stop()
+        self.close()
