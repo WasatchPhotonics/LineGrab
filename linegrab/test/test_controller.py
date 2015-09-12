@@ -33,8 +33,6 @@ class Test(unittest.TestCase):
         app.closeAllWindows()
 
     def test_auto_close(self):
-        # Display the form
-
         # Set the application parameters 
         args = ArgsSimulation()
         self.form.set_parameters(args)
@@ -42,6 +40,30 @@ class Test(unittest.TestCase):
         # Wait 2 seconds, make sure application is closed
         QtTest.QTest.qWait(2000)
         self.assertFalse(self.form.isVisible())
+
+    def test_select_zoom_toggle(self):
+        args = ArgsSimulation()
+        self.form.set_parameters(args)
+
+        # Wait, click the zoom icon
+        QtTest.QTest.qWait(100)
+
+        # 200, 28 of the main form window, because inheriting from the
+        # rectzoomtool apparently disguises the widgetness from the
+        # qttest mouseclick. Can you fix this with a proxy widget?
+        zoom_pos = QtCore.QPoint(200, 28)
+        #QtTest.QTest.mouseClick(self.form, QtCore.Qt.LeftButton, pos=zoom_pos, delay=1)
+
+        # Try find child at - won't that just return the same
+        # rectzoomtool which does not respond to the click interface?
+        child = self.form.childAt(zoom_pos)
+        print "The child is: %s" % child
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton, delay=1)
+
+        # Make sure auto scale is off
+        QtTest.QTest.qWait(500)
+        self.assertFalse(self.form.auto_scale)
+        
 
 if __name__ == "__main__":
     unittest.main()
