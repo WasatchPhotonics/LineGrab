@@ -1,4 +1,14 @@
-""" test just the layout of the visualize interface
+""" multiple test classes for the linegrab project.
+
+Unlike multiple other projects tests files, this has many classes in one
+file. This is so you can just run nosetests from the project root. The
+tests will then all use the qapplication created below. You can get
+around the apparent fact that there can be only one qapplication per
+nosetest run by splitting into multiple runs, then compiling the
+coverage report. This approach makes it easy to just run:
+
+nosetests --with-coverage --cover-package=linegrab
+
 """
 
 import os
@@ -14,6 +24,7 @@ from linegrab import controller
 
 from linegrab import LineGrab
 
+# All the classes below will reuese this qapplication
 app = QtGui.QApplication([])
 
 
@@ -23,6 +34,7 @@ class ArgsSimulation(object):
     def __init__(self):
         self.testing = True 
         self.source = "simulation"
+
 
 class TestLineGrabScript(unittest.TestCase):
 
@@ -207,7 +219,9 @@ class TestController(unittest.TestCase):
         self.assertNotEqual(end_first, live_first)
         self.assertNotEqual(end_last, live_last)
 
+
 class TestFPS(unittest.TestCase):
+
     def setUp(self):
         # Create a barebones widget app to go with the qapplication for
         # testing

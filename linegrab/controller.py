@@ -3,10 +3,8 @@
 acquiring data from a variety of cameras.
 """
 
-import sys
 import numpy
 import logging
-import argparse
 
 from PyQt4 import QtGui, QtCore
 
@@ -42,6 +40,12 @@ class CurveImage(QtGui.QMainWindow):
         self.main_image_dialog.setContentsMargins(17, 0, 0, 0)
 
         self.add_manager_and_tools()
+    
+        # Timer to auto-close the application
+        self.close_timer = QtCore.QTimer()
+        self.close_timer.timeout.connect(self.cleanup_close)
+
+        self.set_app_defaults()
 
         self.show()
 
@@ -53,7 +57,7 @@ class CurveImage(QtGui.QMainWindow):
         """
 
         # Create the widget
-        self.main_curve_dialog = visualize.CleanCurveDialog() 
+        self.main_curve_dialog = visualize.CleanCurveDialog()
 
         # Remove the placeholder widget from the layout
         lcph = self.ui.labelCurvePlaceholder
@@ -122,7 +126,6 @@ class CurveImage(QtGui.QMainWindow):
             log.info("Create simulated spectra device")
             self.dev = devices.SimulatedSpectraDevice()
 
-        self.set_app_defaults()        
         self.setup_pipe_timer()
 
     def delay_close(self):
@@ -130,9 +133,7 @@ class CurveImage(QtGui.QMainWindow):
         close event after a delay.
         """
         log.debug("Trigger delay close")
-        self.closeTimer = QtCore.QTimer()
-        self.closeTimer.timeout.connect(self.cleanup_close)
-        self.closeTimer.start(1000)
+        self.close_timer.start(1000)
 
     def cleanup_close(self):
         """ Cleanup the application on widget close
@@ -142,7 +143,7 @@ class CurveImage(QtGui.QMainWindow):
         #log.info("Attempt to close pipe")
         #result = self.dev.close_pipe()
         #log.info("Close pipe result: %s" % result)
-        #self.dataTimer.stop()
+        #self.data_timer.stop()
         self.close()
 
 
@@ -155,12 +156,12 @@ class CurveImage(QtGui.QMainWindow):
         agfe = dgct(QtGui.QIcon(":/greys/greys/full_extent.svg"),
                     "Full extent graph"
                    )
-        self.actionGraphFullExtent = agfe
+        self.action_graph_full_extent = agfe
 
         agr = dgct(QtGui.QIcon(":/greys/greys/reset.svg"),
                    "Reset graph parameters"
                   )
-        self.actionGraphReset = agr
+        self.action_graph_reset = agr
 
         spacer = QtGui.QWidget()
         spacer.setSizePolicy(QtGui.QSizePolicy.Expanding,
@@ -168,8 +169,8 @@ class CurveImage(QtGui.QMainWindow):
         self.curve_toolbar.addWidget(spacer)
 
         act_name = "Instantaneous performance"
-        self.actionFPSDisplay = QtGui.QAction(act_name, self)
-        self.curve_toolbar.addAction(self.actionFPSDisplay)
+        self.action_fps_display = QtGui.QAction(act_name, self)
+        self.curve_toolbar.addAction(self.action_fps_display)
 
         # Remove the placeholder toolbar
         self.ui.toolBar_GraphControls.setVisible(False)
@@ -181,10 +182,10 @@ class CurveImage(QtGui.QMainWindow):
         # Hook the play/pause buttons
         self.ui.actionContinue_Live_Updates.triggered.connect(self.on_live)
         self.ui.actionPause_Live_Updates.triggered.connect(self.on_pause)
-       
-        # Custom graph buttons 
-        self.actionGraphReset.triggered.connect(self.reset_graph)
-        self.actionGraphFullExtent.triggered.connect(self.full_extent)
+
+        # Custom graph buttons
+        self.action_graph_reset.triggered.connect(self.reset_graph)
+        self.action_graph_full_extent.triggered.connect(self.full_extent)
 
         # Custom tools generated in visualize that are not actions
         self.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
@@ -235,7 +236,7 @@ class CurveImage(QtGui.QMainWindow):
 
         dgimage = self.main_curve_dialog.get_plot()
         dgimage.do_autoscale()
- 
+
     def process_select(self, status):
         """ Provide a default tool for panning the graph and to get out
         of zoom mode.
@@ -274,16 +275,16 @@ class CurveImage(QtGui.QMainWindow):
         zero length delays to continuously poll the devices for data,
         while staying responsive to user events.
         """
-        self.dataTimer = QtCore.QTimer()
-        self.dataTimer.timeout.connect(self.update_visuals)
-        self.dataTimer.start(0)
+        self.data_timer = QtCore.QTimer()
+        self.data_timer.timeout.connect(self.update_visuals)
+        self.data_timer.start(0)
 
     def update_visuals(self):
         """ Attempt to read from the pipe, update the graph.
         """
 
         result, data = self.dev.grab_pipe()
-        
+
         if self.live_updates == True:
             self.update_graph(data)
             self.curve_render += 1
@@ -295,7 +296,7 @@ class CurveImage(QtGui.QMainWindow):
                       #% (self.curve_render, data[0], data[-1]))
 
         self.update_fps()
-        self.dataTimer.start(0)
+        self.data_timer.start(0)
 
     def check_image(self, render_count):
         """ Provide post-data population and form showing alignment and
@@ -315,7 +316,7 @@ class CurveImage(QtGui.QMainWindow):
         # image is clicked.
         ratio = 1.0 / 0.4
         local_plot.set_aspect_ratio(ratio, lock=False)
-        
+
         # Change the plot axis to have 0 in the lower left corner
         local_plot.set_axis_limits(0, -20, 50)
 
@@ -324,10 +325,10 @@ class CurveImage(QtGui.QMainWindow):
         """
         self.fps.tick()
         fps_text = "Update: %s FPS" % self.fps.rate()
-        self.actionFPSDisplay.setText(fps_text)
+        self.action_fps_display.setText(fps_text)
 
     def update_graph(self, data_list):
-        """ Get the current line plot from the available line graph, 
+        """ Get the current line plot from the available line graph,
         change it's data and replot.
         """
         #log.debug("render graph")
@@ -335,12 +336,12 @@ class CurveImage(QtGui.QMainWindow):
 
         mcd = self.main_curve_dialog
         mcd.curve.set_data(x_axis, data_list)
-          
-        if self.auto_scale:  
+
+        if self.auto_scale:
             mcd.get_plot().do_autoscale()
         else:
             mcd.get_plot().replot()
-      
+
     def update_image(self, data):
         """ Add the line of data to the image data, if it is greater
         than the desired display size, roll it.
@@ -352,7 +353,7 @@ class CurveImage(QtGui.QMainWindow):
         img_data = range(len(self.image_data))
 
         position = 0
-        for item in img_data:
+        while position < len(img_data):
             img_data[position] = self.image_data[position]
             position += 1
 

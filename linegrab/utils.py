@@ -1,9 +1,9 @@
 """ linegrab utils - classes and helper functions for the linegrab
-application. 
+application.
 """
 
 from PyQt4.QtCore import QTimer
-    
+
 def load_style_sheet(filename):
     """ Load the qss stylesheet into a string suitable for passing
     to the main widget.
@@ -12,7 +12,7 @@ def load_style_sheet(filename):
     temp_string = ""
     for line in qss_file.readlines():
         temp_string += line
-       
+
     return temp_string
 
 class SimpleFPS(object):
@@ -41,4 +41,6 @@ class SimpleFPS(object):
         return self.fps
 
     def tick(self):
+        """ Add one to the total tick history
+        """
         self.ticks += 1

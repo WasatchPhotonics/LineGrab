@@ -6,13 +6,13 @@ import sys
 import numpy
 import struct
 import logging
-        
+
 from subprocess import Popen, PIPE
 
 log = logging.getLogger(__name__)
 
 class DalsaCobraDevice(object):
-    """ Use a Dalsa frame grabber and the stdin/stdout customized 
+    """ Use a Dalsa frame grabber and the stdin/stdout customized
     example from Sapera.
     """
     def __init__(self):
@@ -25,18 +25,16 @@ class DalsaCobraDevice(object):
         line grabber on the console example from Dalsa.
         """
         log.info("Setup pipe device")
-        prefix = "linegrab\\GrabConsole\\CSharp\\bin\Debug\\"
+        prefix = "linegrab\\GrabConsole\\CSharp\\bin\\Debug\\"
 
         cmd = "%s\\SapNETCSharpGrabConsole.exe" % prefix
         ccf = "%s\\prcinternal.ccf" % prefix
-        print("open %s, %s" % (cmd, ccf))
+        log.debug("open %s, %s" % (cmd, ccf))
         try:
-            self.pipe = Popen([cmd, 
-                        'grab','Xcelera-CL_LX1_1','0',
-                        ccf], stdin=PIPE, stdout=PIPE)         
+            opts = [cmd, 'grab', 'Xcelera-CL_LX1_1', '0', ccf]
+            self.pipe = Popen(opts, stdin=PIPE, stdout=PIPE)
         except:
             log.critical("Failure to setup pipe: " + str(sys.exc_info()))
-            print("Failure to setup pipe: " + str(sys.exc_info()))
             return False
 
         return True
@@ -47,19 +45,19 @@ class DalsaCobraDevice(object):
         """
         pipe = self.pipe
 
-        line = pipe.stdout.readline().replace('\n','')
+        line = pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("WR enter to trigger snap")
         log.info("\n")
         pipe.stdin.write("\n")
 
-        line = pipe.stdout.readline().replace('\n','')
+        line = pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("WR enter to trigger save")
         log.info("\n")
         pipe.stdin.write("\n")
 
-        line = pipe.stdout.readline().replace('\n','')
+        line = pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("\n")
 
@@ -72,10 +70,10 @@ class DalsaCobraDevice(object):
 
         log.info("WR enter to trigger repeat")
         pipe.stdin.write("\n")
-        line = pipe.stdout.readline().replace('\n','')
+        line = pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("\n")
-       
+
         return result, data
 
     def grab_data(self, in_filename="tools\\test.raw"):
@@ -104,7 +102,6 @@ class DalsaCobraDevice(object):
         return 0, "done"
 
 
-    
 class SimulatedPipeDevice(object):
     """ Use the pipe device interface, return a cycling test pattern of
     data.
@@ -118,6 +115,8 @@ class SimulatedPipeDevice(object):
         self.pattern_jump = pattern_jump
 
     def setup_pipe(self):
+        """ Create a simulated connection.
+        """
         log.info("Setup pipe device")
         return True
 
@@ -125,7 +124,7 @@ class SimulatedPipeDevice(object):
         """ Create a cycling test pattern based on the current position
         """
         log.debug("Grab pipe")
-        start = self.pattern_position 
+        start = self.pattern_position
         end = self.pattern_position + self.top_level
         data = numpy.linspace(start, end, 1024)
 
@@ -136,6 +135,8 @@ class SimulatedPipeDevice(object):
         return True, data
 
     def close_pipe(self):
+        """ Simulated the closing of the pipe.
+        """
         log.info("Close pipe device")
         self.pattern_position = 0
         return True
@@ -163,7 +164,7 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
         # up to half the width, add a value that is at least greater
         # than a threshold, then move the threshold up
         width = 10
-    
+
         half = width / 2
         min_gap = 10
 
@@ -184,7 +185,7 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
                 floor = new_floor
                 blk[peak_x] = new_height
                 peak_x += 1
-    
+
             for item in range(half):
                 new_floor = floor - min_gap
                 new_height = nru(floor, new_floor, 1)
@@ -192,16 +193,15 @@ class SimulatedSpectraDevice(SimulatedPipeDevice):
                 floor = new_floor
                 blk[peak_x] = new_height
                 peak_x += 1
-    
+
         self.base_data = low_data + blk
 
 
     def grab_pipe(self):
         """ Apply randomness at each grab.
         """
-        
+
         nru = numpy.random.uniform
         noise_data = nru(self.noise_floor, self.noise_ceiling, 2048)
         new_data = self.base_data + noise_data
         return True, new_data
-            

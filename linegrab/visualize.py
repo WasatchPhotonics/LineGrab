@@ -11,7 +11,6 @@ from guiqwt import styles
 from guiqwt import curve
 from guiqwt import builder
 from guiqwt import tools
-from guiqwt import histogram
 
 from linegrab import utils
 
