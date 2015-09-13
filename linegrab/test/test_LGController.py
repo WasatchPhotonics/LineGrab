@@ -16,7 +16,8 @@ class Test(unittest.TestCase):
         self.log_filename = "LineGrab_log.txt"
 
     def tearDown(self):
-        print "DO you need close all windows?"
+        # This cleans up old windows from rapid tests
+        app.closeAllWindows()
 
     def test_log_file_created_auto_close(self):
         self.assertTrue(os.path.isfile(self.log_filename))
@@ -51,6 +52,10 @@ class Test(unittest.TestCase):
         self.assertTrue(args.testing)
 
     def test_main_options(self):
+        # Test with no main options
+        result = LGController.main(argv=None)
+        self.assertEquals(0, result)
+
         # Verify that main run with the testing option auto-closes the
         # application
         result = LGController.main(["unittest", 

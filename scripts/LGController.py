@@ -28,6 +28,7 @@ class LineGrabApplication(object):
     def parse_args(self, argv):
         """ Handle any bad arguments, then set defaults. 
         """
+        log.debug("Process args: %s" % argv)
         self.args = self.parser.parse_args(argv)
         return self.args
 
