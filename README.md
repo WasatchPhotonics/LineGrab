@@ -8,3 +8,15 @@ LineGrab - Visualize single lines of data from a variety of cameras.
     techniques to provide full-screen line graph visualizations. These
     are critical for the precise alignment of spectrometers.
 
+
+Currently supported cameras include:
+```
+Wasatch Photonics Cobra series
+```
+
+In development cameras, all through DALSA framegrabbers:
+```
+DALSA Spyder
+Sprint Basler
+Sensors Unlimited GL2048
+```
