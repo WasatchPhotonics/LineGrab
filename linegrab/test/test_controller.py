@@ -1,4 +1,4 @@
-""" Tests for LGController gui
+""" Tests for LineGrab gui
 """
 
 import time
@@ -27,7 +27,7 @@ extent_pos = QtCore.QPoint(257, 28)
 reset_pos = QtCore.QPoint(305, 28)
 
 class ArgsSimulation(object):
-    """ Simulation of parser args in LGController.
+    """ Simulation of parser args in LineGrab.
     """
     def __init__(self):
         self.testing = True 

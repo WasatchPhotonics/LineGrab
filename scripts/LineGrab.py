@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" LGController- use various communication methods to display large line
+""" LineGrab - use various communication methods to display large line
 graphs of data from cameras.
 """
 

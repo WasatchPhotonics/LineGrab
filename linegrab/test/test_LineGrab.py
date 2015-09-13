@@ -1,10 +1,10 @@
-""" test_LGController.py tests the interface as run by the user
+""" test_LineGrab.py tests the interface as run by the user
 """
 
 import os
 import unittest
 
-from scripts import LGController
+from scripts import LineGrab
 
 from PyQt4 import QtGui
 
@@ -23,7 +23,7 @@ class Test(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.log_filename))
         orig_size = os.path.getsize(self.log_filename)
 
-        result = LGController.main(["unittest exec", "-t"])
+        result = LineGrab.main(["unittest exec", "-t"])
 
         new_size = os.path.getsize(self.log_filename)
         self.assertGreater(new_size, orig_size)
@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
         # itself which should only be used with the unittest as the
         # controller. source is the data source the application should
         # use
-        lgapp = LGController.LineGrabApplication()  
+        lgapp = LineGrab.LineGrabApplication()  
 
         # Fail on no arguments
         with self.assertRaises(TypeError):
@@ -53,13 +53,13 @@ class Test(unittest.TestCase):
 
     def test_main_options(self):
         # Test with no main options
-        result = LGController.main(argv=None)
-        self.assertEquals(0, result)
+        result = LineGrab.main(argv=None)
+        self.assertEquals(2, result)
 
         # Verify that main run with the testing option auto-closes the
         # application
-        result = LGController.main(["unittest", 
-                                    "-s", "simulation", "-t"])
+        result = LineGrab.main(["unittest", 
+                                "-s", "simulation", "-t"])
         self.assertEquals(0, result)
         
 if __name__ == "__main__":
