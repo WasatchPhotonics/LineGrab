@@ -4,17 +4,8 @@
 import unittest
 import logging
 
-from testfixtures import LogCapture
-
 from linegrab.devices import DalsaCobraDevice
 
-log = logging.getLogger()
-logging.basicConfig(level=logging.DEBUG)
-frmt = logging.Formatter()
-hndl = logging.StreamHandler()
-
-hndl.setFormatter(frmt)
-log.addHandler(hndl)
 
 class Test(unittest.TestCase):
 
