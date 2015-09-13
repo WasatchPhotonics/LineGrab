@@ -89,8 +89,11 @@ class CurveImage(QtGui.QMainWindow):
         manager = plot.PlotManager(self)
         manager.add_plot(self.main_curve_dialog.get_plot())
 
-        # Add a panel to the plot manager
-        manager.add_panel(plot.PlotItemList(self))
+        # Add a panel to the plot manager - this apparently is not
+        # required to enable the tool linkage. Was in here based on
+        # example code. If you add this back in it creates an invisible
+        # widget over at least the 'play' button.
+        #manager.add_panel(plot.PlotItemList(self))
 
         # Associate the toolbar with the plot manager, this is created
         # along with the qmainwindow toolbars

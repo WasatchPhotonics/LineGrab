@@ -17,7 +17,10 @@ from linegrab import controller
 app = QtGui.QApplication([])
 
         
-# 200, 28 of the main form window location of the zoom tool
+# Application level positions of the various widgets. See the test cases
+# below for why this is necessary
+continue_pos = QtCore.QPoint(33, 28)
+pause_pos = QtCore.QPoint(88, 28)
 select_pos = QtCore.QPoint(152, 28)
 zoom_pos = QtCore.QPoint(200, 28)
 extent_pos = QtCore.QPoint(257, 28)
@@ -51,6 +54,7 @@ class Test(unittest.TestCase):
     def test_graph_buttons(self):
         args = ArgsSimulation()
         self.form.set_parameters(args)
+        QtTest.QTest.qWait(100)
 
         # You'd think you could do: 
         # mouseClick(self.form.zoom_tool, QtCore.QtLeftButton)
@@ -63,8 +67,6 @@ class Test(unittest.TestCase):
         #   qtest-mouseclick-on-a-qpushbutton
         # shows that you should use coordinates, look up the child, then
         # the click works.
-
-        QtTest.QTest.qWait(100)
 
         # Click zoom icon, make sure auto scale turns off
         child = self.form.childAt(zoom_pos)
@@ -86,5 +88,70 @@ class Test(unittest.TestCase):
         self.assertEqual(local_plot.get_axis_limits(0)[0], 0)
         self.assertEqual(local_plot.get_axis_limits(0)[1], 4096)
         
+    def test_live_button(self):
+        args = ArgsSimulation()
+        self.form.set_parameters(args)
+        QtTest.QTest.qWait(100)
+        local_curve = self.form.main_curve_dialog.curve
+
+        # Click live again, make sure it stays in live mode
+        pre_count = self.form.curve_render
+        child = self.form.childAt(continue_pos)
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
+        QtTest.QTest.qWait(100)
+        post_count = self.form.curve_render
+        self.assertGreater(post_count, pre_count)
+        
+        
+
+    def test_pause_button(self):
+        args = ArgsSimulation()
+        self.form.set_parameters(args)
+        QtTest.QTest.qWait(100)
+        local_curve = self.form.main_curve_dialog.curve
+
+        # Click the pause button, get the data from the chart
+        child = self.form.childAt(pause_pos)
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
+
+        begin_first = local_curve.get_data()[1][0]
+        begin_last = local_curve.get_data()[1][-1]
+        begin_count = self.form.curve_render
+
+
+        # Wait 500 ms, make sure the total render variable has not
+        # increased and the data is exactly the same
+        QtTest.QTest.qWait(200)
+
+        end_first = local_curve.get_data()[1][0]
+        end_last = local_curve.get_data()[1][-1]
+        end_count = self.form.curve_render
+
+        self.assertEqual(begin_count, end_count)
+        self.assertEqual(begin_first, end_first)
+        self.assertEqual(begin_last, end_last)
+
+        # Click the pause button again, make sure it stays in pause mode
+        child = self.form.childAt(pause_pos)
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
+        QtTest.QTest.qWait(200)
+        post_count = self.form.curve_render
+        self.assertEqual(end_count, post_count)
+
+        # Click the live button, wait another 5ms. Make sure the data is
+        # not exactly the same, and that the curve render count has gone
+        # up
+        child = self.form.childAt(continue_pos)
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
+        QtTest.QTest.qWait(200)
+
+        live_first = local_curve.get_data()[1][0]
+        live_last = local_curve.get_data()[1][-1]
+        live_count = self.form.curve_render
+
+        self.assertGreater(live_count, end_count)
+        self.assertNotEqual(end_first, live_first)
+        self.assertNotEqual(end_last, live_last)
+
 if __name__ == "__main__":
     unittest.main()
