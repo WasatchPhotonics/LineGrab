@@ -206,7 +206,7 @@ class CurveImage(QtGui.QMainWindow):
         """ Pause and live buttons are the equivalent of toggle buttons.
         Only one can be enabled at a time.
         """
-        log.info("Pause live updates: %s" % action)
+        log.info("Pause live updates: %s", action)
         if action == False:
             self.ui.actionPause_Live_Updates.setChecked(True)
 
@@ -241,14 +241,14 @@ class CurveImage(QtGui.QMainWindow):
         """ Provide a default tool for panning the graph and to get out
         of zoom mode.
         """
-        log.debug("Select tool clicked %s" % status)
+        log.debug("Select tool clicked %s", status)
 
     def process_zoom(self, status):
         """ Zoom clicked, turn off auto scaling. The linkage with the
         guiqwt control handles cursor updates and actual zoom
         functionality.
         """
-        log.debug("Zoom tool clicked %s" % status)
+        log.debug("Zoom tool clicked %s", status)
         if status == "True":
             self.auto_scale = False
 

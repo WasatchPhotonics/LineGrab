@@ -29,7 +29,7 @@ class DalsaCobraDevice(object):
 
         cmd = "%s\\SapNETCSharpGrabConsole.exe" % prefix
         ccf = "%s\\prcinternal.ccf" % prefix
-        log.debug("open %s, %s" % (cmd, ccf))
+        log.debug("open %s, %s", cmd, ccf)
         try:
             opts = [cmd, 'grab', 'Xcelera-CL_LX1_1', '0', ccf]
             self.pipe = Popen(opts, stdin=PIPE, stdout=PIPE)
