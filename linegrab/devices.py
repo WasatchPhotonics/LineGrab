@@ -89,7 +89,7 @@ class DalsaCobraDevice(object):
             while pos < 4095:
                 pixel_one = all_data[pos] + all_data[pos+1]
                 data_pak = struct.unpack("H", pixel_one)
-                img_data.append(data_pak)
+                img_data.append(data_pak[0])
                 pos += 2
 
             return 1, img_data

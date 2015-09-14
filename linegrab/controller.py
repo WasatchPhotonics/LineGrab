@@ -294,8 +294,8 @@ class CurveImage(QtGui.QMainWindow):
         if self.live_updates == True:
             self.update_graph(data)
             self.curve_render += 1
-            #self.update_image(data)
-            #self.check_image(self.curve_render)
+            self.update_image(data)
+            self.check_image(self.curve_render)
 
         #if self.args.testing:
             #log.debug("render curve %s Start:%s End:%s" \
