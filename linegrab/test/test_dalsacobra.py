@@ -6,6 +6,8 @@ import logging
 
 from linegrab.devices import DalsaCobraDevice
 
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger()
 
 class Test(unittest.TestCase):
 
@@ -36,7 +38,7 @@ class Test(unittest.TestCase):
 
         result, data = self.dev.grab_pipe()
         self.assertTrue(result)
-        self.assertEqual(len(data), 1024)
+        self.assertEqual(len(data), 2048)
 
         self.assertTrue(self.dev.close_pipe())
 

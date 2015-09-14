@@ -43,21 +43,20 @@ class DalsaCobraDevice(object):
     def grab_pipe(self):
         """ Issue a newline, get a line of data over the pipes.
         """
-        pipe = self.pipe
 
-        line = pipe.stdout.readline().replace('\n', '')
+        line = self.pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("WR enter to trigger snap")
         log.info("\n")
-        pipe.stdin.write("\n")
+        self.pipe.stdin.write("\n")
 
-        line = pipe.stdout.readline().replace('\n', '')
+        line = self.pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("WR enter to trigger save")
         log.info("\n")
-        pipe.stdin.write("\n")
+        self.pipe.stdin.write("\n")
 
-        line = pipe.stdout.readline().replace('\n', '')
+        line = self.pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("\n")
 
@@ -69,8 +68,8 @@ class DalsaCobraDevice(object):
         #time.sleep(1)
 
         log.info("WR enter to trigger repeat")
-        pipe.stdin.write("\n")
-        line = pipe.stdout.readline().replace('\n', '')
+        self.pipe.stdin.write("\n")
+        line = self.pipe.stdout.readline().replace('\n', '')
         log.info("READ " + str(line))
         log.info("\n")
 
@@ -100,6 +99,26 @@ class DalsaCobraDevice(object):
             return 0, "fail"
 
         return 0, "done"
+
+
+    def close_pipe(self):
+        """ write multiple q's to close the stdout pipe.
+        """
+        log.info("Close pipe")
+        # write a bunch of q's and read the lines to close it out
+        try:
+            for i in range(10):
+                log.info("WR q" + str(i))
+                self.pipe.stdin.write("q\n")
+                line = self.pipe.stdout.readline().replace('\n','')
+                
+            self.pipe.stdin.flush()
+            self.pipe.stdout.flush()
+        except:
+            log.warn("close pipe fail: " + str(sys.exc_info()))
+
+        return 1
+
 
 
 class SimulatedPipeDevice(object):

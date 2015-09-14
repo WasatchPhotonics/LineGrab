@@ -43,7 +43,7 @@ class CurveImage(QtGui.QMainWindow):
     
         # Timer to auto-close the application
         self.close_timer = QtCore.QTimer()
-        self.close_timer.timeout.connect(self.cleanup_close)
+        self.close_timer.timeout.connect(self.closeEvent)
 
         self.set_app_defaults()
 
@@ -125,7 +125,13 @@ class CurveImage(QtGui.QMainWindow):
         if args.source == "simulation":
             log.info("Create simulated spectra device")
             self.dev = devices.SimulatedSpectraDevice()
-
+                
+        elif args.source == "cobra":
+            log.info("Create DALSA cobra device")
+            self.dev = devices.DalsaCobraDevice()
+            
+            
+        self.dev.setup_pipe()
         self.setup_pipe_timer()
 
     def delay_close(self):
@@ -135,15 +141,15 @@ class CurveImage(QtGui.QMainWindow):
         log.debug("Trigger delay close")
         self.close_timer.start(1000)
 
-    def cleanup_close(self):
+    def closeEvent(self, event=None):
         """ Cleanup the application on widget close
         close the pipes, stop all the timers.
         """
         log.debug("Cleanup close")
-        #log.info("Attempt to close pipe")
-        #result = self.dev.close_pipe()
-        #log.info("Close pipe result: %s" % result)
-        #self.data_timer.stop()
+        log.info("Attempt to close pipe")
+        result = self.dev.close_pipe()
+        log.info("Close pipe result: %s" % result)
+        self.data_timer.stop()
         self.close()
 
 
@@ -288,8 +294,8 @@ class CurveImage(QtGui.QMainWindow):
         if self.live_updates == True:
             self.update_graph(data)
             self.curve_render += 1
-            self.update_image(data)
-            self.check_image(self.curve_render)
+            #self.update_image(data)
+            #self.check_image(self.curve_render)
 
         #if self.args.testing:
             #log.debug("render curve %s Start:%s End:%s" \
