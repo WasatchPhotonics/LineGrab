@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
 
         result, data = self.dev.grab_pipe()
         self.assertTrue(result)
-        self.assertEqual(len(data), 2048)
+        self.assertEqual(len(data), 4096)
 
         self.assertTrue(self.dev.close_pipe())
 
