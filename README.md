@@ -9,14 +9,5 @@ LineGrab - Visualize single lines of data from a variety of cameras.
     are critical for the precise alignment of spectrometers.
 
 
-Currently supported cameras include:
-```
-Wasatch Photonics Cobra series
-```
-
-In development cameras, all through DALSA framegrabbers:
-```
-DALSA Spyder
-Sprint Basler
-Sensors Unlimited GL2048
-```
+See the WasatchCameraLink repository for a list of currently supported cameras.
+https://github.com/nharringtonwasatch/WasatchCameraLink
