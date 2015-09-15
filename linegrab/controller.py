@@ -11,8 +11,10 @@ from PyQt4 import QtGui, QtCore
 from guiqwt import plot
 
 from linegrab import visualize
-from linegrab import devices
 from linegrab import utils
+
+from wasatchcameralink import DALSA
+from wasatchcameralink import simulation
 
 log = logging.getLogger(__name__)
 
@@ -124,17 +126,17 @@ class CurveImage(QtGui.QMainWindow):
 
         if args.source == "simulation":
             log.info("Create simulated spectra device")
-            self.dev = devices.SimulatedSpectraDevice()
+            self.dev = simulation.SimulatedSpectraDevice()
                 
         elif args.source == "cobra":
             log.info("Create DALSA cobra device")
             #self.dev = devices.DalsaCobraDevice()
-            from wasatchcameralink import DALSA
             self.dev = DALSA.Cobra()
                 
         elif args.source == "basler":
             log.info("Create DALSA basler device")
-            self.dev = devices.DalsaBaslerDevice()
+            #self.dev = devices.DalsaBaslerDevice()
+            self.dev = DALSA.BaslerSprint4K()
             
             
         self.dev.setup_pipe()
