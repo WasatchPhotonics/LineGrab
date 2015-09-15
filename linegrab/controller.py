@@ -129,6 +129,10 @@ class CurveImage(QtGui.QMainWindow):
         elif args.source == "cobra":
             log.info("Create DALSA cobra device")
             self.dev = devices.DalsaCobraDevice()
+                
+        elif args.source == "basler":
+            log.info("Create DALSA basler device")
+            self.dev = devices.DalsaBaslerDevice()
             
             
         self.dev.setup_pipe()

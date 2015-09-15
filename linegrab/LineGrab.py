@@ -45,9 +45,10 @@ class LineGrabApplication(object):
                             help=help_str)
 
         help_str = "Data source for visualization"
+        choices = ["simulation", "e2v", "cobra", "basler"]
         parser.add_argument("-s", "--source", required=True,
                             default="simulation",
-                            choices=["simulation", "e2v", "cobra"],
+                            choices=choices,
                             help=help_str)
 
         return parser
