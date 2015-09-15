@@ -7,6 +7,8 @@ import numpy
 import struct
 import logging
 
+        
+import subprocess
 from subprocess import Popen, PIPE
 
 log = logging.getLogger(__name__)
@@ -30,11 +32,19 @@ class DalsaBaslerDevice(object):
         cmd = "%s\\SapNETCSharpGrabConsole.exe" % prefix
         ccf = "%s\\baslerbase.ccf" % prefix
         log.debug("open %s, %s", cmd, ccf)
+        opts = [cmd, 'grab', 'Xcelera-CL_LX1_1', '0', ccf]
+        
+        # Hide the console and actual sapera grab window. From:
+        # http://code.activestate.com/recipes/409002-launching-a-\
+        # subprocess-without-a-console-window/
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
         try:
-            opts = [cmd, 'grab', 'Xcelera-CL_LX1_1', '0', ccf]
-            self.pipe = Popen(opts, stdin=PIPE, stdout=PIPE)
+            self.pipe = Popen(opts, stdin=PIPE, stdout=PIPE,
+                              startupinfo=startupinfo)
         except:
-            log.critical("Failure to setup pipe: " + str(sys.exc_info()))
+            log.critical("Hidden pipe fail: " + str(sys.exc_info()))
             return False
 
         return True
