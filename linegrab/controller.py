@@ -15,6 +15,7 @@ from linegrab import utils
 
 from wasatchcameralink import DALSA
 from wasatchcameralink import simulation
+from wasatchcameralink import simulation
 
 log = logging.getLogger(__name__)
 
@@ -127,7 +128,11 @@ class CurveImage(QtGui.QMainWindow):
         if args.source == "simulation":
             log.info("Create simulated spectra device")
             self.dev = simulation.SimulatedSpectraDevice()
-                
+               
+        elif args.source == "sled":
+            log.info("Create single sled cobra")
+            self.dev = simulation.SimulatedCobraSLED()
+ 
         elif args.source == "cobra":
             log.info("Create DALSA cobra device")
             #self.dev = devices.DalsaCobraDevice()
