@@ -15,7 +15,6 @@ from linegrab import utils
 
 from wasatchcameralink import DALSA
 from wasatchcameralink import simulation
-from wasatchcameralink import simulation
 
 log = logging.getLogger(__name__)
 
