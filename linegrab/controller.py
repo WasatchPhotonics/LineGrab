@@ -217,8 +217,10 @@ class CurveImage(QtGui.QMainWindow):
         a tiff file.
         """
         log.info("Saving file to test.tif")
-        #local_data = self.main_image_dialog.image.get_data(0, 0, 2048, 200)
 
+        # Use the same inefficient yet understandable method of
+        # transforming the image_data into a 2d numpy array, then use
+        # pil to save to disk
         img_data = range(len(self.image_data))
 
         position = 0
