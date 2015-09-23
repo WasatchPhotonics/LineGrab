@@ -275,7 +275,7 @@ class CurveImage(QtGui.QMainWindow):
         """
         self.curve_render = 0
         self.image_render = 0
-        self.image_height = 50
+        self.image_height = 200
         self.image_data = []
         self.auto_scale = True
 
@@ -336,7 +336,7 @@ class CurveImage(QtGui.QMainWindow):
         local_plot.set_aspect_ratio(ratio, lock=False)
 
         # Change the plot axis to have 0 in the lower left corner
-        local_plot.set_axis_limits(0, -20, 50)
+        local_plot.set_axis_limits(0, -85, self.image_height)
 
     def update_fps(self):
         """ Add tick, display the current rate.

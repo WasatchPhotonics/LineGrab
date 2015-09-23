@@ -47,7 +47,7 @@ class CleanImageDialog(plot.ImageDialog):
     def create_image(self):
         """ Create a 2D test pattern image, apply it to the view area.
         """
-        base_data = range(50)
+        base_data = range(200)
 
         position = 0
         while position < len(base_data):
