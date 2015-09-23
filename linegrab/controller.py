@@ -392,6 +392,13 @@ class CurveImage(QtGui.QMainWindow):
         if len(self.image_data) > self.image_height:
             self.image_data = self.image_data[1:]
 
+        self.image_render += 1
+
+        # A 200 pixel tall image squashed into the render view does not
+        # appear unpleasantely jumpy when scrolled by 5
+        if self.image_render % 5 != 0:
+            return
+
         img_data = range(len(self.image_data))
 
         position = 0
@@ -408,7 +415,6 @@ class CurveImage(QtGui.QMainWindow):
         # to stretch to the window and be in 'normal' size
         mid.get_plot().replot()
 
-        self.image_render += 1
         #if self.args.testing:
             #log.debug("render image %s Start:%s End:%s" \
                       #% (self.image_render, new_data[0][0],

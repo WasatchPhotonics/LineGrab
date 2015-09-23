@@ -5,7 +5,7 @@ file. This is so you can just run nosetests from the project root. The
 tests will then all use the qapplication created below. You can get
 around the apparent fact that there can be only one qapplication per
 nosetest run by splitting into multiple runs, then compiling the
-coverage report. This approach makes it easy to just run:
+coverage report. Instead, this approach makes it easy to just run:
 
 nosetests --with-coverage --cover-package=linegrab
 
@@ -99,10 +99,11 @@ class TestController(unittest.TestCase):
         # below for why this is necessary
         self.continue_pos = QtCore.QPoint(33, 28)
         self.pause_pos = QtCore.QPoint(88, 28)
-        self.select_pos = QtCore.QPoint(152, 28)
-        self.zoom_pos = QtCore.QPoint(200, 28)
-        self.extent_pos = QtCore.QPoint(257, 28)
-        self.reset_pos = QtCore.QPoint(305, 28)
+        self.save_pos = QtCore.QPoint(138, 28)
+        self.select_pos = QtCore.QPoint(202, 28)
+        self.zoom_pos = QtCore.QPoint(250, 28)
+        self.extent_pos = QtCore.QPoint(307, 28)
+        self.reset_pos = QtCore.QPoint(355, 28)
 
     def tearDown(self):
         # This cleans up old windows from rapid tests
