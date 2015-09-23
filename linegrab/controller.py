@@ -6,6 +6,8 @@ acquiring data from a variety of cameras.
 import numpy
 import logging
 
+from PIL import Image
+
 from PyQt4 import QtGui, QtCore
 
 from guiqwt import plot
@@ -200,6 +202,7 @@ class CurveImage(QtGui.QMainWindow):
         # Hook the play/pause buttons
         self.ui.actionContinue_Live_Updates.triggered.connect(self.on_live)
         self.ui.actionPause_Live_Updates.triggered.connect(self.on_pause)
+        self.ui.actionSave.triggered.connect(self.on_save)
 
         # Custom graph buttons
         self.action_graph_reset.triggered.connect(self.reset_graph)
@@ -208,6 +211,25 @@ class CurveImage(QtGui.QMainWindow):
         # Custom tools generated in visualize that are not actions
         self.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
         self.select_tool.wrap_sig.clicked.connect(self.process_select)
+
+    def on_save(self, action):
+        """ Save the existing numpy array used for the image display to
+        a tiff file.
+        """
+        log.info("Saving file to test.tif")
+        #local_data = self.main_image_dialog.image.get_data(0, 0, 2048, 200)
+
+        img_data = range(len(self.image_data))
+
+        position = 0
+        while position < len(img_data):
+            img_data[position] = self.image_data[position]
+            position += 1
+
+        local_data = numpy.array(img_data).astype(float)
+
+        pil_image = Image.fromarray(local_data)
+        pil_image.save("test.tif")
 
     def on_live(self, action):
         """ Live and pause buttons are the equivalent of toggle buttons.

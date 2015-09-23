@@ -118,7 +118,7 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
@@ -149,6 +149,7 @@
    </attribute>
    <addaction name="actionContinue_Live_Updates"/>
    <addaction name="actionPause_Live_Updates"/>
+   <addaction name="actionSave"/>
   </widget>
   <widget class="QToolBar" name="toolBar_GraphControls">
    <property name="enabled">
@@ -253,6 +254,15 @@
    </property>
    <property name="text">
     <string>Full extent</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="iconagraphy.qrc">
+     <normaloff>:/greys/greys/save.svg</normaloff>:/greys/greys/save.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
    </property>
   </action>
  </widget>
