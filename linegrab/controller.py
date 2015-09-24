@@ -44,7 +44,7 @@ class CurveImage(QtGui.QMainWindow):
         self.main_image_dialog.setContentsMargins(17, 0, 0, 0)
 
         self.add_manager_and_tools()
-    
+
         # Timer to auto-close the application
         self.close_timer = QtCore.QTimer()
         self.close_timer.timeout.connect(self.closeEvent)
@@ -129,22 +129,21 @@ class CurveImage(QtGui.QMainWindow):
         if args.source == "simulation":
             log.info("Create simulated spectra device")
             self.dev = simulation.SimulatedSpectraDevice()
-               
+
         elif args.source == "sled":
             log.info("Create single sled cobra")
             self.dev = simulation.SimulatedCobraSLED()
- 
+
         elif args.source == "cobra":
             log.info("Create DALSA cobra device")
             #self.dev = devices.DalsaCobraDevice()
             self.dev = DALSA.Cobra()
-                
+
         elif args.source == "basler":
             log.info("Create DALSA basler device")
             #self.dev = devices.DalsaBaslerDevice()
             self.dev = DALSA.BaslerSprint4K()
-            
-            
+
         self.dev.setup_pipe()
         self.setup_pipe_timer()
 
@@ -153,16 +152,16 @@ class CurveImage(QtGui.QMainWindow):
         close event after a delay.
         """
         log.debug("Trigger delay close")
-        self.close_timer.start(1000)
+        self.close_timer.start(9000)
 
     def closeEvent(self, event=None):
         """ Cleanup the application on widget close
-        close the pipes, stop all the timers.
+        close the pipes, stop all the timers. For some reason, if you
+        don't specify event=None it will save the argument is not given.
         """
-        log.debug("Cleanup close")
-        log.info("Attempt to close pipe")
+        log.debug("Cleanup close, %s", event)
         result = self.dev.close_pipe()
-        log.info("Close pipe result: %s" % result)
+        log.info("Close pipe result: %s", result)
         self.data_timer.stop()
         self.close()
 
@@ -216,7 +215,7 @@ class CurveImage(QtGui.QMainWindow):
         """ Save the existing numpy array used for the image display to
         a tiff file.
         """
-        log.info("Saving file to test.tif")
+        log.info("Saving file to autosave.tif, %s", action)
 
         # Use the same inefficient yet understandable method of
         # transforming the image_data into a 2d numpy array, then use
@@ -231,7 +230,7 @@ class CurveImage(QtGui.QMainWindow):
         local_data = numpy.array(img_data).astype(float)
 
         pil_image = Image.fromarray(local_data)
-        pil_image.save("test.tif")
+        pil_image.save("autosave.tif")
 
     def on_live(self, action):
         """ Live and pause buttons are the equivalent of toggle buttons.
@@ -326,16 +325,14 @@ class CurveImage(QtGui.QMainWindow):
         """
 
         result, data = self.dev.grab_pipe()
+        if not result:
+            log.critical("Problem grabbing pipe")
 
         if self.live_updates == True:
             self.update_graph(data)
             self.curve_render += 1
             self.update_image(data)
             self.check_image(self.curve_render)
-
-        #if self.args.testing:
-            #log.debug("render curve %s Start:%s End:%s" \
-                      #% (self.curve_render, data[0], data[-1]))
 
         self.update_fps()
         self.data_timer.start(0)
@@ -396,8 +393,8 @@ class CurveImage(QtGui.QMainWindow):
 
         # A 200 pixel tall image squashed into the render view does not
         # appear unpleasantely jumpy when scrolled by 5
-        if self.image_render % 5 != 0:
-            return
+        #if self.image_render % 5 != 0:
+            #return
 
         img_data = range(len(self.image_data))
 
@@ -414,10 +411,3 @@ class CurveImage(QtGui.QMainWindow):
         # If you do autoscale here, it tends to jump around in appearing
         # to stretch to the window and be in 'normal' size
         mid.get_plot().replot()
-
-        #if self.args.testing:
-            #log.debug("render image %s Start:%s End:%s" \
-                      #% (self.image_render, new_data[0][0],
-                         #new_data[-1][-1]
-                        #)
-                     #)

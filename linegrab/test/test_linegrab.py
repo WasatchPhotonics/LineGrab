@@ -14,6 +14,8 @@ nosetests --with-coverage --cover-package=linegrab
 import os
 import unittest
 
+from PIL import Image
+
 from PyQt4 import QtGui, QtTest, QtCore
 
 from guiqwt import plot
@@ -114,8 +116,10 @@ class TestController(unittest.TestCase):
         args = ArgsSimulation()
         self.form.set_parameters(args)
 
-        # Wait 2 seconds, make sure application is closed
-        QtTest.QTest.qWait(2000)
+        # Make sure this time is more than the delay close timer value
+        # in the application
+        delay_time = 10000
+        QtTest.QTest.qWait(delay_time)
         self.assertFalse(self.form.isVisible())
 
     def test_graph_buttons(self):
@@ -139,6 +143,7 @@ class TestController(unittest.TestCase):
         child = self.form.childAt(self.zoom_pos)
         QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
         self.assertFalse(self.form.auto_scale)
+        QtTest.QTest.qWait(100)
 
         # Click reset tool, make sure auto scale is on
         child = self.form.childAt(self.reset_pos)
@@ -169,8 +174,6 @@ class TestController(unittest.TestCase):
         post_count = self.form.curve_render
         self.assertGreater(post_count, pre_count)
         
-        
-
     def test_pause_button(self):
         args = ArgsSimulation()
         self.form.set_parameters(args)
@@ -219,6 +222,23 @@ class TestController(unittest.TestCase):
         self.assertGreater(live_count, end_count)
         self.assertNotEqual(end_first, live_first)
         self.assertNotEqual(end_last, live_last)
+
+    def test_save_button(self):
+        args = ArgsSimulation()
+        self.form.set_parameters(args)
+        QtTest.QTest.qWait(8000)
+
+        # Click the save button, wait for it to write to disk
+        child = self.form.childAt(self.save_pos)
+        QtTest.QTest.mouseClick(child, QtCore.Qt.LeftButton)
+        QtTest.QTest.qWait(100)
+
+        # Verify that the file size is 2048*200*4
+        f_size = os.path.getsize("autosave.tif")
+        self.assertEqual(f_size, 1638534)
+
+        # Verify the image can be read by pillow
+        img_file = Image.open("autosave.tif")
 
 
 class TestFPS(unittest.TestCase):
