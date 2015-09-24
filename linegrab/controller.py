@@ -393,8 +393,8 @@ class CurveImage(QtGui.QMainWindow):
 
         # A 200 pixel tall image squashed into the render view does not
         # appear unpleasantely jumpy when scrolled by 5
-        #if self.image_render % 5 != 0:
-            #return
+        if self.image_render % 5 != 0 and self.image_render != 1:
+            return
 
         img_data = range(len(self.image_data))
 
