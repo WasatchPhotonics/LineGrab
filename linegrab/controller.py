@@ -211,11 +211,18 @@ class CurveImage(QtGui.QMainWindow):
         self.zoom_tool.wrap_sig.clicked.connect(self.process_zoom)
         self.select_tool.wrap_sig.clicked.connect(self.process_select)
 
+
     def on_save(self, action):
-        """ Save the existing numpy array used for the image display to
-        a tiff file.
+        """ Create a save as dialog
         """
-        log.info("Saving file to autosave.tif, %s", action)
+
+        # Freeze the display to make saving more robust
+        self.ui.actionPause_Live_Updates.trigger()
+
+        file_name = QtGui.QFileDialog.getSaveFileName(None,"Save Tif")
+        if file_name == "":
+            self.ui.actionContinue_Live_Updates.trigger()
+            return
 
         # Use the same inefficient yet understandable method of
         # transforming the image_data into a 2d numpy array, then use
@@ -229,8 +236,14 @@ class CurveImage(QtGui.QMainWindow):
 
         local_data = numpy.array(img_data).astype(float)
 
+        log.info("Saving to: %s" % file_name)
+        print "File: %s" % file_name
         pil_image = Image.fromarray(local_data)
-        pil_image.save("autosave.tif")
+        pil_image.save(str("%s.tiff" % file_name ))
+
+            
+        # un-freeze the display now that the saving process isover
+        self.ui.actionContinue_Live_Updates.trigger()
 
     def on_live(self, action):
         """ Live and pause buttons are the equivalent of toggle buttons.
@@ -364,13 +377,11 @@ class CurveImage(QtGui.QMainWindow):
 	on the current line of data.
         """
         self.fps.tick()
+
 	range_str = ""
         gd = self.main_curve_dialog.curve.get_data()[1]
 	range_str = "Max: %s, Min: %s, Avg: %0.5s          " \
 		    % (numpy.max(gd), numpy.min(gd), numpy.average(gd))
-
-
-
 
 
         fps_text = "%s Update: %s FPS" % (range_str, self.fps.rate())
