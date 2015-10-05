@@ -123,6 +123,8 @@ class CurveImage(QtGui.QMainWindow):
         """ Assign the startup environment parameters for this
         application run. Data source simulation/e2v, etc.
         """
+        self.args = args
+
         if args.testing:
             self.delay_close()
 
@@ -213,13 +215,18 @@ class CurveImage(QtGui.QMainWindow):
 
 
     def on_save(self, action):
-        """ Create a save as dialog
+        """ Create a save as dialog, unless in testing mode where a
+        filename is hardcoded.
         """
 
         # Freeze the display to make saving more robust
         self.ui.actionPause_Live_Updates.trigger()
 
-        file_name = QtGui.QFileDialog.getSaveFileName(None,"Save Tif")
+        if not self.args.testing:
+            file_name = QtGui.QFileDialog.getSaveFileName(None,"Save Tif")
+        else:
+            file_name = "autosave"
+
         if file_name == "":
             self.ui.actionContinue_Live_Updates.trigger()
             return
@@ -239,7 +246,7 @@ class CurveImage(QtGui.QMainWindow):
         log.info("Saving to: %s" % file_name)
         print "File: %s" % file_name
         pil_image = Image.fromarray(local_data)
-        pil_image.save(str("%s.tiff" % file_name ))
+        pil_image.save(str("%s.tif" % file_name ))
 
             
         # un-freeze the display now that the saving process isover

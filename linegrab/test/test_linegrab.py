@@ -234,15 +234,15 @@ class TestController(unittest.TestCase):
         QtTest.QTest.qWait(100)
 
         # Verify that the file size is 2048*200*4
-	# Apparently on MS windows, the file is slightly different in 
-	# size, which I'm going to attribute to a library issue and just
-	# do an os detection step
+	    # Apparently on MS windows, the file is slightly different in 
+	    # size, which I'm going to attribute to a library issue and just
+	    # do an os detection step
         f_size = os.path.getsize("autosave.tif")
-	import platform
-	if platform.system() == "Linux":
-        	self.assertEqual(f_size, 1638534)
-	else:
-        	self.assertEqual(f_size, 1638522)
+        import platform
+        if platform.system() == "Linux":
+            self.assertEqual(f_size, 1638534)
+        else:
+            self.assertEqual(f_size, 1638522)
 
         # Verify the image can be read by pillow
         img_file = Image.open("autosave.tif")
