@@ -223,7 +223,9 @@ class CurveImage(QtGui.QMainWindow):
         self.ui.actionPause_Live_Updates.trigger()
 
         if not self.args.testing:
-            file_name = QtGui.QFileDialog.getSaveFileName(None,"Save Tif")
+            file_name = QtGui.QFileDialog.getSaveFileName(None,
+                          "Save Tif", "", "TIFF (*.tif)", "",
+                          QtGui.QFileDialog.DontUseNativeDialog)
         else:
             file_name = "autosave"
 
@@ -244,7 +246,6 @@ class CurveImage(QtGui.QMainWindow):
         local_data = numpy.array(img_data).astype(float)
 
         log.info("Saving to: %s" % file_name)
-        print "File: %s" % file_name
         pil_image = Image.fromarray(local_data)
         pil_image.save(str("%s.tif" % file_name ))
 
