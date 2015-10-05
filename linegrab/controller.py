@@ -360,10 +360,20 @@ class CurveImage(QtGui.QMainWindow):
         local_plot.set_axis_limits(0, -85, self.image_height)
 
     def update_fps(self):
-        """ Add tick, display the current rate.
+        """ Add tick, display the current rate. Include basic statistics
+	on the current line of data.
         """
         self.fps.tick()
-        fps_text = "Update: %s FPS" % self.fps.rate()
+	range_str = ""
+        gd = self.main_curve_dialog.curve.get_data()[1]
+	range_str = "Max: %s, Min: %s, Avg: %0.5s          " \
+		    % (numpy.max(gd), numpy.min(gd), numpy.average(gd))
+
+
+
+
+
+        fps_text = "%s Update: %s FPS" % (range_str, self.fps.rate())
         self.action_fps_display.setText(fps_text)
 
     def update_graph(self, data_list):
