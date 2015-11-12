@@ -1,6 +1,6 @@
 LineGrab - Visualize single lines of data from a variety of cameras.
 
-![LineGrab screenshot](/docs/LineGrab_Interface.png "LineGrab screenshot")
+![LineGrab screenshot](/docs/LineGrab.gif "LineGrab screenshot")
 
     Manufacturing and alignment of spectrometers requires line scan
     visualization of camera output. Many vendors provide bare-bones or 

@@ -11,7 +11,7 @@ config = {
     "author_email": "nharrington@wasatchphotonics.com.",
     "version": "1.0.0",
     "install_requires": ["numpy", "PyQt4"],
-    "packages": ["LineGrab"],
+    "packages": ["linegrab"],
     "scripts": [],
     "name": "LineGrab"
 }
