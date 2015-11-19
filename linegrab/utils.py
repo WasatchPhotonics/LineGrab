@@ -2,7 +2,11 @@
 application.
 """
 
-from PyQt4.QtCore import QTimer
+try:
+    from PyQt4.QtCore import QTimer
+except ImportError:
+    from PySide.QtCore import QTimer
+    
 
 def load_style_sheet(filename):
     """ Load the qss stylesheet into a string suitable for passing
