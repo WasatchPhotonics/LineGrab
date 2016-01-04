@@ -10,7 +10,7 @@ config = {
     "download_url": "https://github.com/nharringtonwasatch/LineGrab",
     "author_email": "nharrington@wasatchphotonics.com.",
     "version": "1.0.0",
-    "install_requires": ["numpy", "PyQt4"],
+    "install_requires": ["numpy"],
     "packages": ["linegrab"],
     "scripts": [],
     "name": "LineGrab"
